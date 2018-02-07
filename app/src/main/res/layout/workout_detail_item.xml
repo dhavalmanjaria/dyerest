@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:orientation="vertical"
+    tools:context=".WorkoutDetailActivity">
+
+    <TextView
+        android:id="@+id/day_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        tools:text="Day Name"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/exercise_list_recycler"
+        android:layout_width="56dp"
+        android:layout_height="107dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/launch_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        tools:text="Launch" />
+
+</LinearLayout>
