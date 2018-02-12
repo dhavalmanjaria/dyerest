@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.Workout;
@@ -24,6 +26,7 @@ public class MainActivity extends BaseActivity {
 
     private List<Workout> mWorkoutList;
     private RecyclerView mRecyclerView;
+    private Button [] mViewWorkoutButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,8 @@ public class MainActivity extends BaseActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.card_container);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(new WorkoutCardAdapter());
+
+
     }
 
     private class WorkoutCardAdapter extends RecyclerView.Adapter<WorkoutCardViewHolder> {
