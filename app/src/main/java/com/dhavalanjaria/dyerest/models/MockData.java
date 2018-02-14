@@ -13,7 +13,7 @@ public class MockData {
     public static List<Workout> getWorkouts() {
         List<Workout> retVal = new ArrayList<>();
 
-        for(int i = 1; i < 4; i++) {
+        for(int i = 1; i < 5; i++) {
             Workout workout = new Workout(getUser().getUserId(), "Workout " + i, new Date());
             workout.setTotalPoints(1730);
             retVal.add(workout);
@@ -30,7 +30,20 @@ public class MockData {
             newExercise.setTotalSets(3);
             newExercise.setPoints(10);
             newExercise.setPoundage(15);
-            newExercise.setName("Exercise " + i + " name");
+            newExercise.setName("Lifting Exercise " + i + " name");
+            retVal.add(newExercise);
+        }
+        return retVal;
+    }
+
+    public static List<Exercise> getCardioExercises() {
+        List<Exercise> retVal = new ArrayList<>();
+
+        for(int i = 1; i < 4; i++) {
+            Exercise newExercise = new Exercise();
+            newExercise.setDuration(15);
+            newExercise.setIntensity(3);
+            newExercise.setName("Cardio Exercise " + i + " name");
             retVal.add(newExercise);
         }
         return retVal;
