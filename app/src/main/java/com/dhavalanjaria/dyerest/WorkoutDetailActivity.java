@@ -55,6 +55,7 @@ public class WorkoutDetailActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_detail);
+        
 
         mRecyclerContainer = (RecyclerView) findViewById(R.id.workout_detail_container);
         //TODO: Set empty text view

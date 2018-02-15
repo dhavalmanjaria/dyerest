@@ -14,4 +14,5 @@
     <string name="heading_lifting_exercise">Lifting</string>
     <string name="heading_cardio_exercise">Cardio</string>
     <string name="no_days">No workout days yet. Add them from the menu.</string>
+    <string name="edit">Edit</string>
 </resources>
