@@ -1,4 +1,4 @@
-package com.dhavalanjaria.dyerest;
+package com.dhavalanjaria.dyerest.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.dhavalanjaria.dyerest.EditWorkoutActivity;
+import com.dhavalanjaria.dyerest.R;
 
 /**
  * Created by Dhaval Anjaria on 2/12/2018.
