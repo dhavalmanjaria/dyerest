@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest.models;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -9,13 +10,13 @@ import java.util.List;
 public class WorkoutDay {
 
     private String name;
-    private List<Exercise> exercises;
+    private LinkedList<Exercise> exercises;
 
     public WorkoutDay() {
         // For DataSnapshot.getValue();
     }
 
-    public WorkoutDay(String name, List<Exercise> exercises) {
+    public WorkoutDay(String name, LinkedList<Exercise> exercises) {
         this.name = name;
         this.exercises = exercises;
     }
@@ -28,11 +29,11 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public List<Exercise> getExercises() {
+    public LinkedList<Exercise> getExercises() {
         return exercises;
     }
 
-    public void setExercises(List<Exercise> exercises) {
+    public void setExercises(LinkedList<Exercise> exercises) {
         this.exercises = exercises;
     }
 }

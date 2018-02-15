@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 import com.dhavalanjaria.dyerest.models.Exercise;
@@ -53,12 +54,22 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bind(WorkoutDay workoutDay) {
+    public void bind(final WorkoutDay workoutDay) {
         mDayNameTextView.setText(workoutDay.getName());
 
         ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
         mExerciseListRecycler.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        mLaunchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // getAdapterPosition should technically work.
+                // However, expect errors
+                Intent intent = ActiveWorkoutActivity.newIntent(v.getContext(), getAdapterPosition());
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     private class ExerciseViewHolder extends RecyclerView.ViewHolder {
