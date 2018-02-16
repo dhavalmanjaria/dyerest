@@ -2,6 +2,7 @@ package com.dhavalanjaria.dyerest.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,15 +23,16 @@ public class MockData {
         return retVal;
     }
 
-    public static List<Exercise> getLiftingExercises() {
-        List<Exercise> retVal = new ArrayList<>();
+    public static LinkedList<Exercise> getLiftingExercises() {
+        LinkedList<Exercise> retVal = new LinkedList<>();
 
         for(int i = 1; i < 4; i++) {
-            Exercise newExercise = new Exercise();
+            Exercise newExercise = new LiftingExercise();
             newExercise.setTotalSets(3);
             newExercise.setPoints(10);
             newExercise.setPoundage(15);
             newExercise.setName("Lifting Exercise " + i + " name");
+
             retVal.add(newExercise);
         }
         return retVal;
@@ -40,13 +42,21 @@ public class MockData {
         List<Exercise> retVal = new ArrayList<>();
 
         for(int i = 1; i < 4; i++) {
-            Exercise newExercise = new Exercise();
+            Exercise newExercise = new CardioExercise();
             newExercise.setDuration(15);
             newExercise.setIntensity(3);
             newExercise.setName("Cardio Exercise " + i + " name");
+
             retVal.add(newExercise);
         }
         return retVal;
+    }
+
+    public static LinkedList<Exercise> getRandomExercises() {
+        List<Exercise> exercises = getLiftingExercises();
+        exercises.addAll(getCardioExercises());
+
+        return (LinkedList<Exercise>) exercises;
     }
 
     public static List<WorkoutDay> getWorkoutDays() {
@@ -55,7 +65,7 @@ public class MockData {
         for(int i = 1; i < 4; i++) {
             WorkoutDay day = new WorkoutDay();
             day.setName("Day " + i);
-            day.setExercises(getLiftingExercises());
+            day.setExercises(getRandomExercises());
             retval.add(day);
         }
         return retval;

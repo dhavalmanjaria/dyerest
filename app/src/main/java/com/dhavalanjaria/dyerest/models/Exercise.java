@@ -2,6 +2,8 @@ package com.dhavalanjaria.dyerest.models;
 
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
 /**
  * Created by Dhaval Anjaria on 2/6/2018.
  */
@@ -10,6 +12,17 @@ public class Exercise {
 
     public String name;
     public int points;
+
+    public List<ExerciseMap> mExerciseMaps;
+
+    // Here we see the covariance-contravariance thing
+    public List<ExerciseMap> getExerciseMaps() {
+        return mExerciseMaps;
+    }
+
+    protected void setExerciseMaps(List<ExerciseMap> exerciseMaps) {
+        this.mExerciseMaps = exerciseMaps;
+    }
 
     @Nullable
     public int totalSets;
@@ -31,8 +44,6 @@ public class Exercise {
 
     @Nullable
     public int incline;
-
-    public int [] setPoundage;
 
     public String [] days;
 
@@ -116,14 +127,6 @@ public class Exercise {
 
     public void setIncline(@Nullable int incline) {
         this.incline = incline;
-    }
-
-    public int[] getSetPoundage() {
-        return setPoundage;
-    }
-
-    public void setSetPoundage(int[] setPoundage) {
-        this.setPoundage = setPoundage;
     }
 
     public String[] getDays() {
