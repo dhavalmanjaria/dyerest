@@ -12,6 +12,7 @@ import com.google.firebase.database.Query;
 public class CardioExerciseListFragment extends ExerciseListFragment {
 
     // TODO: Refractor this into something more sane
+    // Eventually this will be removed in favor of the getQuery override.
     public CardioExerciseListFragment() {
         mExerciseList = MockData.getCardioExercises();
     }

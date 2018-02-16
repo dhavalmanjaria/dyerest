@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+@Deprecated
 public class EditWorkoutActivity extends AppCompatActivity {
 
     private Button mAddDayButton;
