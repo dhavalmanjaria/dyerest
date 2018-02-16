@@ -15,4 +15,5 @@
     <string name="heading_cardio_exercise">Cardio</string>
     <string name="no_days">No workout days yet. Add them from the menu.</string>
     <string name="edit">Edit</string>
+    <string name="add">Add</string>
 </resources>

@@ -24,6 +24,15 @@ public class CardioExercise extends Exercise {
     }
 
     @Override
+    public String toString() {
+        StringBuffer retVal = new StringBuffer();
+        for (ExerciseMap exerciseMap: mExerciseMaps) {
+            retVal.append(exerciseMap.getFieldName() + ": " + exerciseMap.getValue());
+        }
+        return retVal.toString();
+    }
+
+    @Override
     public ArrayList<ExerciseMap> getExerciseMaps() {
         return mExerciseMaps;
     }

@@ -19,9 +19,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Exercise name" />
 
-    <Button
-        android:id="@+id/add_remove_exercise_button"
-        style="@style/Widget.AppCompat.Button"
+    <Switch
+        android:id="@+id/add_remove_exercise_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

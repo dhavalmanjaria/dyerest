@@ -9,16 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
+import com.dhavalanjaria.dyerest.ExerciseListActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 import com.dhavalanjaria.dyerest.models.Exercise;
+import com.dhavalanjaria.dyerest.models.ExerciseMap;
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +43,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
     // https://irpdevelop.wordpress.com/2016/02/10/horizontal-recyclerview-inside-a-vertical-recyclerview/
     private RecyclerView mExerciseListRecycler;
     private Button mLaunchButton;
+    private ImageButton mEditDayButton;
     private LayoutInflater mLayoutInflater;
 
     public WorkoutDayViewHolder(final View itemView, LayoutInflater layoutInflater) {
@@ -48,18 +54,10 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         mDayNameTextView = itemView.findViewById(R.id.day_name);
         mExerciseListRecycler = itemView.findViewById(R.id.exercise_list_recycler);
         mLaunchButton = itemView.findViewById(R.id.launch_button);
+        mEditDayButton = itemView.findViewById(R.id.edit_day_button);
 
         mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-
-    }
-
-    public void bind(final WorkoutDay workoutDay) {
-        mDayNameTextView.setText(workoutDay.getName());
-
-        ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
-        mExerciseListRecycler.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
         mLaunchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +68,25 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 v.getContext().startActivity(intent);
             }
         });
+
+        mEditDayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = ExerciseListActivity.newIntent(v.getContext(), getAdapterPosition());
+                v.getContext().startActivity(intent);
+            }
+        });
+
+    }
+
+    public void bind(final WorkoutDay workoutDay) {
+        mDayNameTextView.setText(workoutDay.getName());
+
+        ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
+        mExerciseListRecycler.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+
     }
 
     private class ExerciseViewHolder extends RecyclerView.ViewHolder {
@@ -91,9 +108,20 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         public void bind(Exercise exercise) {
             mExerciseName.setText(exercise.getName());
-            mExerciseTarget.setText("" + exercise.getPoundage());
+
+            StringBuffer targetText = new StringBuffer();
+
+            // Should be getLastExerciseMap or something
+            List<ExerciseMap> targets = exercise.getExerciseMaps();
+            for (ExerciseMap t: targets) {
+                targetText.append(t.getValue() + " ");
+            }
+
+            mExerciseTarget.setText(targetText.toString());
             mExercisePoints.setText("" + exercise.getPoints());
-            mPreviousDate.setText(new Date().toString());
+
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+            mPreviousDate.setText(formattedDate);
         }
     }
 

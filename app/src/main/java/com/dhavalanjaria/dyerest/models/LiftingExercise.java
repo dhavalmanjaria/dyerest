@@ -28,5 +28,14 @@ public class LiftingExercise extends Exercise {
         return mExerciseMap;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer retVal = new StringBuffer();
+        for (ExerciseMap exerciseMap: mExerciseMaps) {
+            retVal.append(exerciseMap.getFieldName() + ": " + exerciseMap.getValue());
+        }
+        return retVal.toString();
+    }
+
     // No setter because this is temporary and should not be used to write data.
 }

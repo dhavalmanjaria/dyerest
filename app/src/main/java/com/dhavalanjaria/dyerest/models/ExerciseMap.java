@@ -30,5 +30,10 @@ public class ExerciseMap {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return getFieldName() + ": " + getValue();
+    }
+
     // No setter because this is temporary and should not be used to write data.
 }

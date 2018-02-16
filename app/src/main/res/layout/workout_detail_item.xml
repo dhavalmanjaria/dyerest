@@ -41,6 +41,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             />
         <ImageButton
+            android:id="@+id/edit_day_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
