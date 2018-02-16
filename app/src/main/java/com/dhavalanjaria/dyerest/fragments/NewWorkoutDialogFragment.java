@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.dhavalanjaria.dyerest.EditWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 
@@ -56,7 +55,7 @@ public class NewWorkoutDialogFragment extends DialogFragment {
                         // the Intent should carry the workout name, later
                         // Eventually this should create a new workout and show the detail for that
                         // new workout.
-                        startActivity(new Intent(getActivity(), WorkoutDetailActivity.class));
+                        startActivity(WorkoutDetailActivity.newIntent(getActivity(), getWorkoutName()));
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
