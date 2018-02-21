@@ -24,7 +24,9 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
@@ -54,7 +56,13 @@ public class WorkoutDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_detail);
 
-        mWorkoutReference = getRootDataReference().child(getUserId());
+        String workoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
+
+        mWorkoutReference = getRootDataReference()
+                .child("workouts")
+                .child(getUserId())
+                .child(workoutId)
+                .child("days");
 
         mRecyclerContainer = (RecyclerView) findViewById(R.id.workout_detail_container);
 
@@ -66,6 +74,17 @@ public class WorkoutDetailActivity extends BaseActivity {
 
         mDayAdapter = new WorkoutDayAdapter(options);
         updateUI();
+    }
+
+    public void addWorkoutDay(String workoutDayName) {
+        WorkoutDay newDay = new WorkoutDay(workoutDayName, null);
+
+        String newWorkoutDayKey = mWorkoutReference.push().getKey();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(newWorkoutDayKey, newDay.toMap());
+        mWorkoutReference.updateChildren(childUpdates);
+        mDayAdapter.notifyDataSetChanged();
     }
 
     private class WorkoutDayAdapter extends FirebaseRecyclerAdapter<WorkoutDay, WorkoutDayViewHolder> {
@@ -124,11 +143,6 @@ public class WorkoutDetailActivity extends BaseActivity {
 
     @Override
     public Query getQuery() {
-
-        // This returns the wrong tree (FOR NOW)
-        //TODO: Fix tree
-        String workoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
-
-        return mWorkoutReference.child(workoutId);
+        return mWorkoutReference.orderByKey();
     }
 }

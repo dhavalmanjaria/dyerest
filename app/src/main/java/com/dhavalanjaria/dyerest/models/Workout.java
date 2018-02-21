@@ -10,9 +10,11 @@ import java.util.Map;
 
 public class Workout {
 
+    private String workoutId;
     private String name;
     private Date dateCreated;
     private int totalPoints;
+    private Map<String, Object> days;
 
     public Workout() {
     }
@@ -25,10 +27,19 @@ public class Workout {
         this.totalPoints = 0;
     }
 
-    public Workout(String name, Date dateCreated, int totalPoints) {
+    public Workout(String name, Date dateCreated, int totalPoints, Map<String, Object> days) {
         this.name = name;
         this.dateCreated = dateCreated;
         this.totalPoints = totalPoints;
+        this.days = days;
+    }
+
+    public String getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(String workoutId) {
+        this.workoutId = workoutId;
     }
 
     public String getName() {
@@ -55,11 +66,20 @@ public class Workout {
         this.totalPoints = totalPoints;
     }
 
+    public Map<String, Object> getDays() {
+        return days;
+    }
+
+    public void setDays(Map<String, Object> days) {
+        this.days = days;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("name", getName());
         map.put("dateCreated", getDateCreated());
         map.put("totalPoints", getTotalPoints());
+        map.put("days", getDays());
 
         return map;
     }

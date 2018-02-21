@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity {
 
         @Override
         protected void onBindViewHolder(@NonNull WorkoutCardViewHolder holder, int position, @NonNull Workout model) {
-            holder.bind(model);
+            holder.bind(model, getRef(position).getKey());
         }
     }
 
@@ -104,9 +104,8 @@ public class MainActivity extends BaseActivity {
 
         String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
 
-        Workout newWorkout = new Workout(workoutName, new Date());
+        Workout newWorkout = new Workout(workoutName, new Date(), 0, new HashMap<String, Object>());
         Map<String, Object> childUpdates = new HashMap<>();
-
 
         childUpdates.put(newWorkoutKey, newWorkout.toMap());
         mUserWorkoutsReference.updateChildren(childUpdates);
