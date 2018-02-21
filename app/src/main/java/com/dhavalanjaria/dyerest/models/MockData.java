@@ -15,7 +15,7 @@ public class MockData {
         List<Workout> retVal = new ArrayList<>();
 
         for(int i = 1; i < 5; i++) {
-            Workout workout = new Workout(getUser().getUserId(), "Workout " + i, new Date());
+            Workout workout = new Workout("Workout " + i, new Date());
             workout.setTotalPoints(1730);
             retVal.add(workout);
 

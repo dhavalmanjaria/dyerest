@@ -11,16 +11,9 @@
     android:id="@+id/exercise_list_recycler_edit"
     layout="@layout/activity_workout_detail"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    >
+    android:layout_width="match_parent"    >
 
 </include>
 
-    <Button
-        android:id="@+id/add_day_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_day"
-        style="@style/Base.Theme.AppCompat.Light"/>
 
 </LinearLayout>

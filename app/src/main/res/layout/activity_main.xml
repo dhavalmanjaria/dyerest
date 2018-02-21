@@ -9,7 +9,8 @@
 <android.support.v7.widget.RecyclerView
     android:id="@+id/card_container"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    tools:listitem="@layout/workout_detail_item">
 
 </android.support.v7.widget.RecyclerView>
 

@@ -2,6 +2,7 @@ package com.dhavalanjaria.dyerest;
 
 
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -12,18 +13,28 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.fragments.NewWorkoutDialogFragment;
-import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutCardViewHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends BaseActivity {
 
     public static final String DIALOG_NEW_WORKOUT = "NewWorkout";
+    private static final int REQUEST_WORKOUT_NAME = 1 ;
 
-    private List<Workout> mWorkoutList;
+    private DatabaseReference mUserWorkoutsReference;
+
+
     private RecyclerView mRecyclerView;
+    private WorkoutCardAdapter mWorkoutCardAdapter;
     private FloatingActionButton mNewWorkoutButton;
 
     @Override
@@ -31,10 +42,18 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mWorkoutList = MockData.getWorkouts();
+        // Point directly to the current user's workouts.
+        mUserWorkoutsReference = getRootDataReference().child("workouts").child(getUserId());
+
         mRecyclerView = (RecyclerView) findViewById(R.id.card_container);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(new WorkoutCardAdapter());
+
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Workout>()
+                .setQuery(getQuery(), Workout.class)
+                .build();
+
+        mWorkoutCardAdapter = new WorkoutCardAdapter(options);
+        mRecyclerView.setAdapter(mWorkoutCardAdapter);
         mNewWorkoutButton = (FloatingActionButton) findViewById(R.id.add_workout_fab);
 
         // This may possibly be a bad strategy to handle data exchange between a dialog and an activity
@@ -45,16 +64,19 @@ public class MainActivity extends BaseActivity {
                 NewWorkoutDialogFragment dialog = new NewWorkoutDialogFragment();
                 dialog.show(fragmentManager, DIALOG_NEW_WORKOUT);
 
-                String newWorkoutName = dialog.getWorkoutName();
-                if (newWorkoutName != null) {
-                    //TODO: Create a new workout with the name and then edit it.
+                String workoutName = dialog.getWorkoutName();
+                // Now we save the workout with the new name.
 
-                }
             }
         });
     }
 
-    private class WorkoutCardAdapter extends RecyclerView.Adapter<WorkoutCardViewHolder> {
+    private class WorkoutCardAdapter extends FirebaseRecyclerAdapter<Workout, WorkoutCardViewHolder> {
+
+        public WorkoutCardAdapter(@NonNull FirebaseRecyclerOptions<Workout> options) {
+            super(options);
+        }
+
         @Override
         public WorkoutCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = getLayoutInflater();
@@ -63,14 +85,54 @@ public class MainActivity extends BaseActivity {
             return new WorkoutCardViewHolder(cardView);
         }
 
-        @Override
-        public void onBindViewHolder(WorkoutCardViewHolder holder, int position) {
-            holder.bind(mWorkoutList.get(position));
-        }
 
         @Override
-        public int getItemCount() {
-            return mWorkoutList.size();
+        protected void onBindViewHolder(@NonNull WorkoutCardViewHolder holder, int position, @NonNull Workout model) {
+            holder.bind(model);
         }
+    }
+
+    /**
+     * This function adds a new workout with the workout name, which should be called by the
+     * DialogFragment. For now this seems like more expedient solution than implementing a listener,
+     * or using Fragments for all Activities which I should've done in the first place.
+     * @param workoutName
+     */
+    public void addWorkout(String workoutName) {
+        String newWorkoutKey = mUserWorkoutsReference
+                .push().getKey();
+
+        String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+
+        Workout newWorkout = new Workout(workoutName, new Date());
+        Map<String, Object> childUpdates = new HashMap<>();
+
+
+        childUpdates.put(newWorkoutKey, newWorkout.toMap());
+        mUserWorkoutsReference.updateChildren(childUpdates);
+        mWorkoutCardAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mWorkoutCardAdapter != null) {
+            mWorkoutCardAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mWorkoutCardAdapter != null) {
+            mWorkoutCardAdapter.stopListening();
+        }
+    }
+
+    @Override
+    public Query getQuery() {
+        Query query = mUserWorkoutsReference.orderByChild("dateCreated");
+        return query;
     }
 }

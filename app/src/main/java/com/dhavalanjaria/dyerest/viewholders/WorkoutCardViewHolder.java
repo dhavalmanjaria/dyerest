@@ -48,8 +48,12 @@ public class WorkoutCardViewHolder extends RecyclerView.ViewHolder {
     public void bind(Workout workout) {
         mWorkoutName.setText(workout.getName());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String formattedDate = dateFormat.format(workout.getDateCreated());
-        mDateCreatedValue.setText(formattedDate);
+        //TODO: Remove this:
+        if (workout.getDateCreated() != null) {
+            String formattedDate = dateFormat.format(workout.getDateCreated());
+            mDateCreatedValue.setText(formattedDate);
+        }
+
         mTotalPoints.setText(workout.getTotalPoints() + "");
     }
 }
