@@ -21,4 +21,9 @@
     <string name="remove_exercise">Remove</string>
     <string name="delete_item">Del</string>
     <string name="confirm_remove">Remove Item?</string>
+    <string name="edit_guide">Exercise Guide</string>
+    <string name="add_link">Add Link</string>
+    <string name="view_link">View Link</string>
+    <string name="edit_image">Edit Image</string>
+    <string name="new_comment">New Comment</string>
 </resources>
