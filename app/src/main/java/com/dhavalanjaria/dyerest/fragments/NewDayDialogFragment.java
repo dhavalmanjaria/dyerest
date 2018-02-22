@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import com.dhavalanjaria.dyerest.ExerciseListActivity;
 import com.dhavalanjaria.dyerest.R;
+import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 
 /**
  * Created by Dhaval Anjaria on 2/15/2018.
@@ -43,8 +44,7 @@ public class NewDayDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         setWorkoutDayName(workoutDayName.getText().toString());
-                        // the Intent should carry the workout name, later
-                        startActivity(new Intent(getActivity(), ExerciseListActivity.class));
+                        ((WorkoutDetailActivity) getActivity()).addWorkoutDay(getWorkoutDayName());
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)

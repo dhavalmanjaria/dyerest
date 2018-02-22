@@ -15,6 +15,7 @@ import com.dhavalanjaria.dyerest.fragments.ActiveWorkoutExerciseFragment;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
+import com.google.firebase.database.Query;
 
 import java.util.LinkedList;
 
@@ -58,5 +59,10 @@ public class ActiveWorkoutActivity extends BaseActivity {
         };
 
         mActiveExerciseViewPager.setAdapter(mStatePagerAdapter);
+    }
+
+    @Override
+    public Query getQuery() {
+        return null;
     }
 }

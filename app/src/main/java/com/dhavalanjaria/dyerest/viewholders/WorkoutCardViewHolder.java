@@ -34,22 +34,25 @@ public class WorkoutCardViewHolder extends RecyclerView.ViewHolder {
         mTotalPoints =  (TextView) itemView.findViewById(R.id.total_points_text);
         mViewWorkoutButton = (Button) itemView.findViewById(R.id.view_workout_btn);
 
-        mViewWorkoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = WorkoutDetailActivity.newIntent(itemView.getContext(),
-                        mWorkoutName.getText().toString());
-                itemView.getContext().startActivity(intent);
-            }
-        });
 
     }
 
-    public void bind(Workout workout) {
+    public void bind(final Workout workout, final String workoutId) {
         mWorkoutName.setText(workout.getName());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate = dateFormat.format(workout.getDateCreated());
         mDateCreatedValue.setText(formattedDate);
+
         mTotalPoints.setText(workout.getTotalPoints() + "");
+
+        mViewWorkoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = WorkoutDetailActivity.newIntent(itemView.getContext(),
+                        workoutId);
+                itemView.getContext().startActivity(intent);
+            }
+        });
+
     }
 }

@@ -1,6 +1,8 @@
 package com.dhavalanjaria.dyerest.models;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/6/2018.
@@ -8,16 +10,16 @@ import java.util.Date;
 
 public class Workout {
 
-    public String userId;
-    public String name;
-    public Date dateCreated;
-    public int totalPoints;
+    private String workoutId;
+    private String name;
+    private Date dateCreated;
+    private int totalPoints;
+    private Map<String, Object> days;
 
     public Workout() {
     }
 
-    public Workout(String userId, String name, Date dateCreated) {
-        this.userId = userId;
+    public Workout(String name, Date dateCreated) {
         this.name = name;
         this.dateCreated = dateCreated;
 
@@ -25,12 +27,19 @@ public class Workout {
         this.totalPoints = 0;
     }
 
-    public String getUserId() {
-        return userId;
+    public Workout(String name, Date dateCreated, int totalPoints, Map<String, Object> days) {
+        this.name = name;
+        this.dateCreated = dateCreated;
+        this.totalPoints = totalPoints;
+        this.days = days;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(String workoutId) {
+        this.workoutId = workoutId;
     }
 
     public String getName() {
@@ -55,6 +64,24 @@ public class Workout {
 
     public void setTotalPoints(int totalPoints) {
         this.totalPoints = totalPoints;
+    }
+
+    public Map<String, Object> getDays() {
+        return days;
+    }
+
+    public void setDays(Map<String, Object> days) {
+        this.days = days;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", getName());
+        map.put("dateCreated", getDateCreated());
+        map.put("totalPoints", getTotalPoints());
+        map.put("days", getDays());
+
+        return map;
     }
 
     //TODO: See toMap();

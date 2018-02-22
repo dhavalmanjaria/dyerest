@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest.models;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,5 +36,13 @@ public class WorkoutDay {
 
     public void setExercises(LinkedList<Exercise> exercises) {
         this.exercises = exercises;
+    }
+
+    public HashMap<String, Object> toMap() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", getName());
+        map.put("exercises", getExercises());
+
+        return map;
     }
 }
