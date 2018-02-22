@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.dhavalanjaria.dyerest.EditExerciseActivity"
+    android:padding="16dp">
+    <!-- the above value should be @dimens/activity_horizontal_margin but it doesn't seem to
+    work. -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <EditText
+        android:id="@+id/exercise_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/name"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/added_fields_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        tools:listitem="@layout/exercise_fields_item">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <EditText
+        android:id="@+id/add_field_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_field"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_field"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/cardio_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cardio"/>
+
+        <RadioButton
+            android:id="@+id/lifting_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lifting"/>
+    </RadioGroup>
+</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_save"/>
+</android.support.design.widget.CoordinatorLayout>

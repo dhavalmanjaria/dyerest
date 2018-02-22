@@ -16,4 +16,9 @@
     <string name="no_days">No workout days yet. Add them from the menu.</string>
     <string name="edit">Edit</string>
     <string name="add">Add</string>
+    <string name="add_field">Add Field</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="remove_exercise">Remove</string>
+    <string name="delete_item">Del</string>
+    <string name="confirm_remove">Remove Item?</string>
 </resources>
