@@ -15,8 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.dhavalanjaria.dyerest.fragments.NewDayDialogFragment;
-import com.dhavalanjaria.dyerest.models.Workout;
+import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutDayViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -25,19 +24,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
  */
 
-public class WorkoutDetailActivity extends BaseActivity {
+public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompletedListener {
 
     public static final String EXTRA_WORKOUT_ID = "WorkoutDetailActivity.WorkoutDay";
     public static final String DIALOG_NEW_WORKOUT_DAY = "NewWorkoutDay";
+    public static final String KEY_WORKOUT_ID = "WorkoutDetailActivity.mWorkoutDaysReference";
 
-    private DatabaseReference mWorkoutReference;
+    private DatabaseReference mWorkoutDaysReference;
     private TextView mDayName;
     private Button mLaunchButton;
     private RecyclerView mRecyclerContainer;
@@ -58,14 +57,17 @@ public class WorkoutDetailActivity extends BaseActivity {
 
         String workoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
 
-        mWorkoutReference = getRootDataReference()
+        if (savedInstanceState != null) {
+            workoutId = savedInstanceState.getString(KEY_WORKOUT_ID);
+        }
+
+        mWorkoutDaysReference = getRootDataReference()
                 .child("workouts")
                 .child(getUserId())
                 .child(workoutId)
                 .child("days");
 
         mRecyclerContainer = (RecyclerView) findViewById(R.id.workout_detail_container);
-
         mRecyclerContainer.setLayoutManager(new LinearLayoutManager(this));
 
         FirebaseRecyclerOptions<WorkoutDay> options = new FirebaseRecyclerOptions.Builder<WorkoutDay>()
@@ -77,19 +79,17 @@ public class WorkoutDetailActivity extends BaseActivity {
     }
 
     public void addWorkoutDay(String workoutDayName) {
-        WorkoutDay newDay = new WorkoutDay(workoutDayName, null);
+        WorkoutDay newDay = new WorkoutDay(workoutDayName);
 
-        String newWorkoutDayKey = mWorkoutReference.push().getKey();
+        String newWorkoutDayKey = mWorkoutDaysReference.push().getKey();
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(newWorkoutDayKey, newDay.toMap());
-        mWorkoutReference.updateChildren(childUpdates);
+        mWorkoutDaysReference.updateChildren(childUpdates);
         mDayAdapter.notifyDataSetChanged();
     }
 
     private class WorkoutDayAdapter extends FirebaseRecyclerAdapter<WorkoutDay, WorkoutDayViewHolder> {
-
-        private List<WorkoutDay> mWorkoutDayModel;
 
         /**
          * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -103,7 +103,7 @@ public class WorkoutDetailActivity extends BaseActivity {
 
         @Override
         protected void onBindViewHolder(@NonNull WorkoutDayViewHolder holder, int position, @NonNull WorkoutDay model) {
-            holder.bind(model);
+           holder.bind(model, getRef(position));
         }
 
         @Override
@@ -117,18 +117,28 @@ public class WorkoutDetailActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.add_day_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case R.id.add_day_menu_item:
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                NewDayDialogFragment dialog = new NewDayDialogFragment();
-                dialog.show(fragmentManager, DIALOG_NEW_WORKOUT_DAY);
+                EditDialogFragment fragment = EditDialogFragment.newInstance("New Day Name", new OnDialogCompletedListener() {
+                    @Override
+                    public void onDialogComplete(String text) {
+                        addWorkoutDay(text);
+                    }
+                });
+                fragment.show(fragmentManager, "WorkoutDetailActivity");
+                return true;
+            case R.id.edit_all_exercises_menu_item:
+                Intent intent = ExerciseListActivity.newIntent(this, mWorkoutDaysReference, false);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -136,13 +146,42 @@ public class WorkoutDetailActivity extends BaseActivity {
     }
 
     private void updateUI() {
-
         mRecyclerContainer.setAdapter(mDayAdapter);
         mDayAdapter.notifyDataSetChanged();
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (mDayAdapter != null) {
+            mDayAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mDayAdapter != null) {
+            mDayAdapter.stopListening();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // getParent because the reference points to the "days" child
+        outState.putSerializable(KEY_WORKOUT_ID, mWorkoutDaysReference.getParent().getKey());
+    }
+
+    @Override
     public Query getQuery() {
-        return mWorkoutReference.orderByKey();
+        return mWorkoutDaysReference.orderByChild("name");
+    }
+
+
+
+    @Override
+    public void onDialogComplete(String text) {
+        addWorkoutDay(text);
     }
 }

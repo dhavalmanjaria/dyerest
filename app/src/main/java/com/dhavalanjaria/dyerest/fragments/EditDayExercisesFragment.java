@@ -24,33 +24,16 @@ import java.util.List;
  * Created by Dhaval Anjaria on 2/14/2018.
  */
 
-public abstract class ExerciseListFragment extends Fragment {
+public abstract class EditDayExercisesFragment extends Fragment {
 
-    public static final String TAG = "ExerciseListFragment";
+    public static final String TAG = "EditDayExercisesFragment";
+    protected static final String KEY_ADDING_TO_DAY = "EditDayExercisesFragment.AddingToDay";
 
     private RecyclerView mExerciseListRecycler;
     protected List<Exercise> mExerciseList;
+    private boolean mAddingToDay;
 
-    private class AddExerciseAdapter extends RecyclerView.Adapter<AddExerciseViewHolder> {
-        @Override
-        public AddExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = getLayoutInflater();
-            View v = inflater.inflate(R.layout.add_exercise_item, parent,false);
-            return new AddExerciseViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(AddExerciseViewHolder holder, int position) {
-            holder.bind(mExerciseList.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return mExerciseList.size();
-        }
-    }
-
-    public ExerciseListFragment() {
+    public EditDayExercisesFragment() {
         mExerciseList = MockData.getLiftingExercises();
     }
 
@@ -59,7 +42,9 @@ public abstract class ExerciseListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_exercise_list, container, false);
+        Bundle args = getArguments();
 
+        mAddingToDay = args.getBoolean(KEY_ADDING_TO_DAY);
         mExerciseListRecycler = (RecyclerView) v.findViewById(R.id.add_exercise_recycler);
         return v;
     }
@@ -78,7 +63,24 @@ public abstract class ExerciseListFragment extends Fragment {
         // changing
     }
 
+    private class AddExerciseAdapter extends RecyclerView.Adapter<AddExerciseViewHolder> {
+        @Override
+        public AddExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = getLayoutInflater();
+            View v = inflater.inflate(R.layout.add_exercise_item, parent,false);
+            return new AddExerciseViewHolder(v, mAddingToDay);
+        }
 
+        @Override
+        public void onBindViewHolder(AddExerciseViewHolder holder, int position) {
+            holder.bind(mExerciseList.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mExerciseList.size();
+        }
+    }
 
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();

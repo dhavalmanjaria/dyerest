@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dhavalanjaria.dyerest.fragments.NewWorkoutDialogFragment;
+import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutCardViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -29,6 +29,7 @@ public class MainActivity extends BaseActivity {
 
     public static final String DIALOG_NEW_WORKOUT = "NewWorkout";
     private static final int REQUEST_WORKOUT_NAME = 1 ;
+    public static final String TAG = "MainActivity";
 
     private DatabaseReference mUserWorkoutsReference;
 
@@ -61,12 +62,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                NewWorkoutDialogFragment dialog = new NewWorkoutDialogFragment();
-                dialog.show(fragmentManager, DIALOG_NEW_WORKOUT);
-
-                String workoutName = dialog.getWorkoutName();
-                // Now we save the workout with the new name.
-
+                EditDialogFragment dialogFragment = EditDialogFragment.newInstance("New Workout", new OnDialogCompletedListener() {
+                    @Override
+                    public void onDialogComplete(String text) {
+                        addWorkout(text);
+                    }
+                });
+                dialogFragment.show(fragmentManager, TAG);
             }
         });
     }
@@ -80,7 +82,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public WorkoutCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = getLayoutInflater();
-            View cardView = inflater.inflate(R.layout.workout_card_view, parent, false);
+            View cardView = inflater.inflate(R.layout.workout_card_item, parent, false);
 
             return new WorkoutCardViewHolder(cardView);
         }

@@ -25,6 +25,31 @@
         android:layout_height="wrap_content"
         android:hint="@string/name"/>
 
+
+    <LinearLayout
+        android:id="@+id/max_sets_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/max_sets_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/max_sets"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/max_sets_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_marginStart="8dp"
+            android:inputType="number"/>
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/added_fields_recycler"
         android:layout_width="match_parent"
@@ -33,21 +58,46 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <EditText
-        android:id="@+id/add_field_edit"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/add_field"/>
+        >
 
-    <Button
-        android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/add_field_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/add_field"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/add_exercise_field_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/add_exercise_field_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_field"/>
+        android:text="@string/lifting_exercise_field_tip"/>
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/cardio_radio"
@@ -62,11 +112,30 @@
             android:text="Lifting"/>
     </RadioGroup>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/edit_guide"/>
 
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp">
+        <Button
+            android:id="@+id/edit_exercise_guide_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/edit_guide"/>
+
+        <Button
+            android:id="@+id/exercise_comments_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/view_comments"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_toEndOf="@id/edit_exercise_guide_button"/>
+
+    </LinearLayout>
 
 </LinearLayout>
     </ScrollView>

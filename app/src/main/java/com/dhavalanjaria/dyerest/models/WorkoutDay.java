@@ -11,13 +11,17 @@ import java.util.List;
 public class WorkoutDay {
 
     private String name;
-    private LinkedList<Exercise> exercises;
+    private List<Exercise> exercises;
 
     public WorkoutDay() {
         // For DataSnapshot.getValue();
     }
 
-    public WorkoutDay(String name, LinkedList<Exercise> exercises) {
+    public WorkoutDay(String name) {
+        this.name = name;
+    }
+
+    public WorkoutDay(String name, List<Exercise> exercises) {
         this.name = name;
         this.exercises = exercises;
     }
@@ -30,18 +34,18 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public LinkedList<Exercise> getExercises() {
+    public List<Exercise> getExercises() {
         return exercises;
     }
 
-    public void setExercises(LinkedList<Exercise> exercises) {
+    public void setExercises(List<Exercise> exercises) {
         this.exercises = exercises;
     }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("name", getName());
-        map.put("exercises", getExercises());
+        // add exercises
 
         return map;
     }

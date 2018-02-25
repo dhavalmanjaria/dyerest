@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="200dp"
+    android:layout_height="300dp"
     android:orientation="vertical"
     tools:context=".WorkoutDetailActivity">
 
@@ -20,11 +20,17 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/exercise_list_recycler"
         android:layout_width="wrap_content"
-        android:layout_height="107dp"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/workout_detail_item"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp">
 
     </android.support.v7.widget.RecyclerView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/no_exercises"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -38,15 +44,14 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@string/start_workout"
-            style="@style/Widget.AppCompat.Button.Colored"
             />
-        <ImageButton
+        <Button
             android:id="@+id/edit_day_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_edit"/>
+            android:text="@string/edit"/>
 
     </LinearLayout>
 

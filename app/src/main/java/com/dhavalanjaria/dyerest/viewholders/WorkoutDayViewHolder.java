@@ -1,30 +1,31 @@
 package com.dhavalanjaria.dyerest.viewholders;
 
-import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.ExerciseListActivity;
+import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
-import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
+import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.ExerciseMap;
-import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
+import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
     // https://irpdevelop.wordpress.com/2016/02/10/horizontal-recyclerview-inside-a-vertical-recyclerview/
     private RecyclerView mExerciseListRecycler;
     private Button mLaunchButton;
-    private ImageButton mEditDayButton;
+    private Button mEditDayButton;
     private LayoutInflater mLayoutInflater;
 
     public WorkoutDayViewHolder(final View itemView, LayoutInflater layoutInflater) {
@@ -59,12 +60,21 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
 
+    }
+
+    public void bind(final WorkoutDay workoutDay, final DatabaseReference workoutDayRef) {
+        mDayNameTextView.setText(workoutDay.getName());
+
+        ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
+        mExerciseListRecycler.setAdapter(adapter);
+
         mLaunchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // getAdapterPosition should technically work.
                 // However, expect errors
-                Intent intent = ActiveWorkoutActivity.newIntent(v.getContext(), getAdapterPosition());
+                // Replace with String workoutKey
+                Intent intent = ActiveWorkoutActivity.newIntent(v.getContext(), 0);
                 v.getContext().startActivity(intent);
             }
         });
@@ -72,21 +82,43 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         mEditDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = ExerciseListActivity.newIntent(v.getContext(), getAdapterPosition());
-                v.getContext().startActivity(intent);
+                PopupMenu menu = new PopupMenu(itemView.getContext(), mEditDayButton);
+                menu.inflate(R.menu.edit_workout_day_menu);
+
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.edit_workout_day_name_item:
+                                FragmentManager manager = ((AppCompatActivity)itemView.getContext())
+                                        .getSupportFragmentManager();
+                                EditDialogFragment editDialogFragment = EditDialogFragment.newInstance("Edit Day", new OnDialogCompletedListener() {
+                                    @Override
+                                    public void onDialogComplete(String text) {
+                                        workoutDayRef.child("name").setValue(text);
+                                    }
+                                });
+                                editDialogFragment.show(manager, "WorkoutDayViewHolder");
+                                return true;
+                            case R.id.edit_workout_day_sequence_item:
+                                return true;
+                            case R.id.edit_workout_day_exercises_item:
+                                Intent intent = ExerciseListActivity.newIntent(itemView.getContext(),
+                                        workoutDayRef, true);
+                                itemView.getContext().startActivity(intent);
+                                return true;
+                            default:
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                menu.show();
+
             }
         });
 
-    }
-
-    public void bind(final WorkoutDay workoutDay) {
-        mDayNameTextView.setText(workoutDay.getName());
-
-        ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
-        mExerciseListRecycler.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
-
     }
 
     private class ExerciseViewHolder extends RecyclerView.ViewHolder {
@@ -130,8 +162,10 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         private List<Exercise> mExerciseModel;
 
         // This constructor stays because we need to get exercise from that particular day
+        // Using nothing now but it needs to change once we add exercises to the WorkoutDay Firebase
+        // schema
         public ExerciseAdapter(WorkoutDay day) {
-            mExerciseModel = day.getExercises();
+            mExerciseModel = new LinkedList<>();
         }
 
         @Override

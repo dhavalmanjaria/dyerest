@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.ExerciseGuideFragment"
+    tools:context=".ExerciseGuideActivity"
     >
 
     <ImageView
@@ -29,26 +29,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
+        android:orientation="horizontal">
         <Button
-            android:id="@+id/view_link_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:text="@string/view_link"
             android:layout_margin="8dp"
             style="?android:attr/buttonBarButtonStyle"
-            android:drawableStart="@drawable/ic_view_link"
-            android:layout_weight="1"/>
+            android:drawableStart="@drawable/ic_view_link"/>
 
         <Button
-            android:id="@+id/add_link_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_margin="8dp"
             style="?android:attr/buttonBarButtonStyle"
-            android:text="@string/add_link"
-            android:layout_weight="1"/>
+            android:text="@string/add_link" />
 
     </LinearLayout>
 </LinearLayout>
