@@ -17,14 +17,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".WorkoutDetailActivity" />
-        <activity android:name=".ExerciseListActivity" />
         <activity android:name=".ActiveWorkoutActivity" />
         <activity android:name=".EditExerciseActivity" />
-        <activity android:name=".EditDayActivity" />
+        <activity android:name=".EditDaySequenceActivity" />
         <activity android:name=".ExerciseHistoryActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".ExerciseGuideActivity" />
-        <activity android:name=".fragments.ExerciseCommentsActivity"></activity>
+        <activity android:name=".fragments.ExerciseCommentsActivity" />
+        <activity android:name=".PointsByDatePagerActivity" />
+        <activity android:name=".AddExerciseToDayActivity"/>
+        <activity android:name=".ListAllExerciseActivity"/>
     </application>
 
 </manifest>

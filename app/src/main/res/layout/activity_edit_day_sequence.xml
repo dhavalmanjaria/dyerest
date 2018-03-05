@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dhavalanjaria.dyerest.EditDayActivity">
+    tools:context="com.dhavalanjaria.dyerest.EditDaySequenceActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/edit_day_recycler"
+        android:id="@+id/edit_day_sequence_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/edit_day_item"
+        tools:listitem="@layout/edit_day_sequence_item"
         ></android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>

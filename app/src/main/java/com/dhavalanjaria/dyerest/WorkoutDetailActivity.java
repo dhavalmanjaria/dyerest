@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
+import com.dhavalanjaria.dyerest.models.Exercise;
+import com.dhavalanjaria.dyerest.models.MockData;
+import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutDayViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,6 +93,33 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         mDayAdapter.notifyDataSetChanged();
     }
 
+    private class GetScreenshotOfDetailAdapter extends RecyclerView.Adapter<WorkoutDayViewHolder> {
+
+        private List<WorkoutDay> mModel;
+
+        public GetScreenshotOfDetailAdapter() {
+            mModel = MockData.getWorkoutDays();
+        }
+
+        @Override
+        public WorkoutDayViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View workoutDayView = getLayoutInflater().inflate(R.layout.workout_detail_item, parent,
+                    false);
+
+            return new WorkoutDayViewHolder(workoutDayView, getLayoutInflater());
+        }
+
+        @Override
+        public void onBindViewHolder(WorkoutDayViewHolder holder, int position) {
+            holder.bind(mModel.get(position), mWorkoutDaysReference);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mModel.size();
+        }
+    }
+
     private class WorkoutDayAdapter extends FirebaseRecyclerAdapter<WorkoutDay, WorkoutDayViewHolder> {
 
         /**
@@ -137,7 +168,7 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
                 fragment.show(fragmentManager, "WorkoutDetailActivity");
                 return true;
             case R.id.edit_all_exercises_menu_item:
-                Intent intent = ExerciseListActivity.newIntent(this, mWorkoutDaysReference, false);
+                Intent intent = ListAllExerciseActivity.newIntent(this, mWorkoutDaysReference);
                 startActivity(intent);
                 return true;
             default:
@@ -146,7 +177,8 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
     }
 
     private void updateUI() {
-        mRecyclerContainer.setAdapter(mDayAdapter);
+        //mRecyclerContainer.setAdapter(mDayAdapter);
+        mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());
         mDayAdapter.notifyDataSetChanged();
     }
 

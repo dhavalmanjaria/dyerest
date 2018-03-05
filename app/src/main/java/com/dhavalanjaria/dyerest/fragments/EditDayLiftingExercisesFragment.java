@@ -2,8 +2,7 @@ package com.dhavalanjaria.dyerest.fragments;
 
 import android.os.Bundle;
 
-import com.dhavalanjaria.dyerest.fragments.EditDayExercisesFragment;
-import com.dhavalanjaria.dyerest.models.MockData;
+import com.dhavalanjaria.dyerest.ExerciseListActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -17,15 +16,14 @@ public class EditDayLiftingExercisesFragment extends EditDayExercisesFragment {
     }
 
     // TODO: Refractor this into something more sane
-    public static EditDayLiftingExercisesFragment newInstance(boolean addingToDay) {
+    public static EditDayLiftingExercisesFragment newInstance(ExerciseListActivity.LIST_TYPE listType) {
         Bundle args = new Bundle();
 
         EditDayLiftingExercisesFragment fragment = new EditDayLiftingExercisesFragment();
-        args.putSerializable(KEY_ADDING_TO_DAY, addingToDay);
+        args.putSerializable(KEY_LIST_TYPE, listType);
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {

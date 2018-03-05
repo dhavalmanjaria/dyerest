@@ -16,36 +16,37 @@ import android.view.View;
 
 import com.dhavalanjaria.dyerest.fragments.EditDayCardioExercisesFragment;
 import com.dhavalanjaria.dyerest.fragments.EditDayLiftingExercisesFragment;
+import com.dhavalanjaria.dyerest.viewholders.AddExerciseToDayViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.ExerciseListViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.ListAllExercisesViewHolder;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 //TODO: Perhaps rename this to AddExerciseActivity (since you're adding these exercises to the workout)
-public class ExerciseListActivity extends BaseActivity {
+public abstract class ExerciseListActivity extends BaseActivity {
 
     public static final String EXTRA_WORKOUT_DAY = "ExerciseListActivity.WorkoutDay";
-    private static final String EXTRA_ADDING_TO_DAY = "ExerciseListActivity.AddingToDay";
+    protected static final String EXTRA_LIST_TYPE = "ExerciseListActivity.ListType";
+
+    public static enum LIST_TYPE {
+        ADD_TO_DAY,
+        ALL_EXERCISE_LIST,
+        NONE
+    };
 
     private FragmentPagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private DatabaseReference mReference;
     private FloatingActionButton mFloatingActionButton;
-    private boolean mAddingToDay;
-
-    public static Intent newIntent(Context context, DatabaseReference workoutDayRef, boolean addingToDay) {
-        Intent intent = new Intent(context, ExerciseListActivity.class);
-        //TODO: See Option A for Schema.
-        intent.putExtra(EXTRA_WORKOUT_DAY, workoutDayRef.toString());
-        intent.putExtra(EXTRA_ADDING_TO_DAY, addingToDay);
-        return intent;
-    }
+    protected LIST_TYPE mListType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_exercises);
 
-        mAddingToDay = (Boolean) getIntent().getSerializableExtra(EXTRA_ADDING_TO_DAY);
+        mListType = (LIST_TYPE) getIntent().getSerializableExtra(EXTRA_LIST_TYPE);
         // Get workout day from id passed to intent
         String workoutDayId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_DAY);
         mReference = FirebaseDatabase.getInstance().getReferenceFromUrl(workoutDayId);
@@ -54,8 +55,8 @@ public class ExerciseListActivity extends BaseActivity {
 
             private final Fragment[] mFragments = new Fragment[] {
                     // Add the WorkoutDay to each fragment.
-                    EditDayLiftingExercisesFragment.newInstance(mAddingToDay),
-                    EditDayCardioExercisesFragment.newInstance(mAddingToDay)
+                    EditDayLiftingExercisesFragment.newInstance(mListType),
+                    EditDayCardioExercisesFragment.newInstance(mListType)
             };
 
             private final String[] tabHeadings = new String[] {
@@ -115,10 +116,23 @@ public class ExerciseListActivity extends BaseActivity {
         }
     }
 
+
+    public ExerciseListViewHolder createExerciseListViewHolder(LIST_TYPE type, View v) {
+        switch (type) {
+            case ADD_TO_DAY:
+                return new AddExerciseToDayViewHolder(v);
+            case ALL_EXERCISE_LIST:
+                return new ListAllExercisesViewHolder(v);
+            case NONE:
+                return null;
+        }
+        return null;
+        // Note: an ENUM is used here because it is easily serializable and can be passed to the
+        // Lifting / Cardio exercise fragments so that they can get the ViewHolder they require.
+    }
+
     @Override
     public Query getQuery() {
         return null;
     }
-
-
 }

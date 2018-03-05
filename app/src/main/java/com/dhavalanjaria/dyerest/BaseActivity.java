@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,11 +44,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.user_menu, menu);
+        getMenuInflater().inflate(R.menu.view_histroy_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.sign_out_menu_item:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(this, SignInActivity.class));
+                return true;
+            case R.id.view_history_menu_item:
+                intent = ExerciseHistoryActivity.newIntent(this, getRootDataReference());
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

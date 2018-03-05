@@ -55,7 +55,7 @@ public class EditExerciseActivity extends BaseActivity {
         setContentView(R.layout.activity_edit_exercise);
 
         mNameEdit = findViewById(R.id.exercise_name_edit);
-        mExerciseFieldRecycler = findViewById(R.id.added_fields_recycler);
+        //mExerciseFieldRecycler = findViewById(R.id.added_fields_recycler);
         adapter = new ToDeleteExerciseFieldAdapter();
         mExerciseFieldRecycler.setAdapter(adapter);
         mExerciseFieldRecycler.setLayoutManager(new LinearLayoutManager(this));

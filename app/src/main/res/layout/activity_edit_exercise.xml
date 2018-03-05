@@ -36,7 +36,7 @@
             android:id="@+id/max_sets_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:text="@string/max_sets"
             android:layout_marginBottom="8dp"/>
 
@@ -50,49 +50,49 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/added_fields_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        tools:listitem="@layout/exercise_fields_item">
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/added_fields_recycler"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="200dp"-->
+        <!--tools:listitem="@layout/exercise_fields_item">-->
 
-    </android.support.v7.widget.RecyclerView>
+    <!--</android.support.v7.widget.RecyclerView>-->
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+    <!--<android.support.constraint.ConstraintLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--&gt;-->
 
-        <EditText
-            android:id="@+id/add_field_edit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:hint="@string/add_field"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/add_exercise_field_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!--<EditText-->
+            <!--android:id="@+id/add_field_edit"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:hint="@string/add_field"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toStartOf="@+id/add_exercise_field_button"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-        <ImageButton
-            android:id="@+id/add_exercise_field_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_add"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+        <!--<ImageButton-->
+            <!--android:id="@+id/add_exercise_field_button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:src="@drawable/ic_add"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
+    <!--</android.support.constraint.ConstraintLayout>-->
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lifting_exercise_field_tip"/>
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/lifting_exercise_field_tip"/>-->
 
     <RadioGroup
         android:layout_width="match_parent"

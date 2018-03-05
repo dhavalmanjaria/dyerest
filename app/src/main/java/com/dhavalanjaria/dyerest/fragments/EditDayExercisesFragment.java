@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dhavalanjaria.dyerest.ExerciseListActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.viewholders.AddExerciseViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.ExerciseListViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -27,11 +28,11 @@ import java.util.List;
 public abstract class EditDayExercisesFragment extends Fragment {
 
     public static final String TAG = "EditDayExercisesFragment";
-    protected static final String KEY_ADDING_TO_DAY = "EditDayExercisesFragment.AddingToDay";
+    protected static final String KEY_LIST_TYPE = "EditDayExercisesFragment.ListType";
 
     private RecyclerView mExerciseListRecycler;
     protected List<Exercise> mExerciseList;
-    private boolean mAddingToDay;
+    protected ExerciseListActivity.LIST_TYPE mListType;
 
     public EditDayExercisesFragment() {
         mExerciseList = MockData.getLiftingExercises();
@@ -42,10 +43,10 @@ public abstract class EditDayExercisesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_exercise_list, container, false);
-        Bundle args = getArguments();
 
-        mAddingToDay = args.getBoolean(KEY_ADDING_TO_DAY);
+        mListType = (ExerciseListActivity.LIST_TYPE) getArguments().getSerializable(KEY_LIST_TYPE);
         mExerciseListRecycler = (RecyclerView) v.findViewById(R.id.add_exercise_recycler);
+
         return v;
     }
 
@@ -53,33 +54,34 @@ public abstract class EditDayExercisesFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Set up layout manager
-        mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         // There should be a constructor taking an ExerciseList, perhaps
         mExerciseListRecycler.setAdapter(new AddExerciseAdapter());
+
+        // Set up layout manager
+        mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Also, notifyDataSetChanged wouldn't really matter here since the exercise list isn't
         // changing
     }
 
-    private class AddExerciseAdapter extends RecyclerView.Adapter<AddExerciseViewHolder> {
+    private class AddExerciseAdapter extends RecyclerView.Adapter<ExerciseListViewHolder> {
         @Override
-        public AddExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ExerciseListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = getLayoutInflater();
             View v = inflater.inflate(R.layout.add_exercise_item, parent,false);
-            return new AddExerciseViewHolder(v, mAddingToDay);
+            return ((ExerciseListActivity)getContext()).createExerciseListViewHolder(mListType, v);
         }
 
         @Override
-        public void onBindViewHolder(AddExerciseViewHolder holder, int position) {
-            holder.bind(mExerciseList.get(position));
+        public void onBindViewHolder(ExerciseListViewHolder holder, int position) {
+            holder.bind(mExerciseList.get(position), "");
         }
 
         @Override
         public int getItemCount() {
             return mExerciseList.size();
         }
+
     }
 
     public String getUid() {

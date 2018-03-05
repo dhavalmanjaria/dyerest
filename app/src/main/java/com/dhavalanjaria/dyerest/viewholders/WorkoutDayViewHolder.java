@@ -14,7 +14,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
+import com.dhavalanjaria.dyerest.AddExerciseToDayActivity;
+import com.dhavalanjaria.dyerest.EditDaySequenceActivity;
 import com.dhavalanjaria.dyerest.ExerciseListActivity;
+import com.dhavalanjaria.dyerest.ListAllExerciseActivity;
 import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
@@ -88,6 +91,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent;
                         switch (item.getItemId()) {
                             case R.id.edit_workout_day_name_item:
                                 FragmentManager manager = ((AppCompatActivity)itemView.getContext())
@@ -101,10 +105,12 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                                 editDialogFragment.show(manager, "WorkoutDayViewHolder");
                                 return true;
                             case R.id.edit_workout_day_sequence_item:
+                                intent = EditDaySequenceActivity.newIntent(itemView.getContext(), workoutDayRef.toString());
+                                itemView.getContext().startActivity(intent);
                                 return true;
                             case R.id.edit_workout_day_exercises_item:
-                                Intent intent = ExerciseListActivity.newIntent(itemView.getContext(),
-                                        workoutDayRef, true);
+                                intent = AddExerciseToDayActivity.newIntent(itemView.getContext(),
+                                        workoutDayRef);
                                 itemView.getContext().startActivity(intent);
                                 return true;
                             default:
@@ -144,11 +150,12 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
             StringBuffer targetText = new StringBuffer();
 
             // Should be getLastExerciseMap or something
-            List<ExerciseMap> targets = exercise.getExerciseMaps();
-            for (ExerciseMap t: targets) {
-                targetText.append(t.getValue() + " ");
-            }
+//            List<ExerciseMap> targets = exercise.getExerciseMaps();
+//            for (ExerciseMap t: targets) {
+//                targetText.append(t.getValue() + " ");
+//            }
 
+            targetText.append("0 - 0 - 0");
             mExerciseTarget.setText(targetText.toString());
             mExercisePoints.setText("" + exercise.getPoints());
 
@@ -165,7 +172,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         // Using nothing now but it needs to change once we add exercises to the WorkoutDay Firebase
         // schema
         public ExerciseAdapter(WorkoutDay day) {
-            mExerciseModel = new LinkedList<>();
+            mExerciseModel = day.getExercises();
         }
 
         @Override
