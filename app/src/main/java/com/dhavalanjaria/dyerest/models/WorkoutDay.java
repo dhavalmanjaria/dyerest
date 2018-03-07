@@ -3,6 +3,7 @@ package com.dhavalanjaria.dyerest.models;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
@@ -11,7 +12,7 @@ import java.util.List;
 public class WorkoutDay {
 
     private String name;
-    private List<Exercise> exercises;
+    private Map<String, Object> exercises;
 
     public WorkoutDay() {
         // For DataSnapshot.getValue();
@@ -21,7 +22,7 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public WorkoutDay(String name, List<Exercise> exercises) {
+    public WorkoutDay(String name, Map<String, Object> exercises) {
         this.name = name;
         this.exercises = exercises;
     }
@@ -34,11 +35,11 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public List<Exercise> getExercises() {
+    public Map<String, Object>getExercises() {
         return exercises;
     }
 
-    public void setExercises(List<Exercise> exercises) {
+    public void setExercises(Map<String, Object> exercises) {
         this.exercises = exercises;
     }
 

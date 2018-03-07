@@ -33,7 +33,6 @@ public class MainActivity extends BaseActivity {
 
     private DatabaseReference mUserWorkoutsReference;
 
-
     private RecyclerView mRecyclerView;
     private WorkoutCardAdapter mWorkoutCardAdapter;
     private FloatingActionButton mNewWorkoutButton;
@@ -44,7 +43,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         // Point directly to the current user's workouts.
-        mUserWorkoutsReference = getRootDataReference().child("workouts").child(getUserId());
+        mUserWorkoutsReference = getRootDataReference().child("workouts");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.card_container);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));

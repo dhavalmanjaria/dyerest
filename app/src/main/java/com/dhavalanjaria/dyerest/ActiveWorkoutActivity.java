@@ -48,7 +48,9 @@ public class ActiveWorkoutActivity extends BaseActivity {
             public Fragment getItem(int position) {
                 // Important bit here. This is where the current exercise is determined
                 // basically. It is then passed eventually ExerciseDetailViewHolder.
-                Exercise currentExercise = mWorkoutDayModel.getExercises().get(position);
+
+                // / change this
+                Exercise currentExercise = MockData.getCardioExercises().get(position);
                 return ActiveWorkoutExerciseFragment.newInstance(currentExercise);
             }
 

@@ -67,7 +67,6 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
 
         mWorkoutDaysReference = getRootDataReference()
                 .child("workouts")
-                .child(getUserId())
                 .child(workoutId)
                 .child("days");
 
@@ -93,6 +92,7 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         mDayAdapter.notifyDataSetChanged();
     }
 
+    @Deprecated
     private class GetScreenshotOfDetailAdapter extends RecyclerView.Adapter<WorkoutDayViewHolder> {
 
         private List<WorkoutDay> mModel;
@@ -177,8 +177,8 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
     }
 
     private void updateUI() {
-        //mRecyclerContainer.setAdapter(mDayAdapter);
-        mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());
+        mRecyclerContainer.setAdapter(mDayAdapter);
+        // mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());
         mDayAdapter.notifyDataSetChanged();
     }
 

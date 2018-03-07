@@ -6,6 +6,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
 import com.dhavalanjaria.dyerest.R;
+import com.dhavalanjaria.dyerest.models.DayExercise;
 import com.dhavalanjaria.dyerest.models.Exercise;
 
 /**
@@ -22,9 +23,8 @@ public class ListAllExercisesViewHolder extends ExerciseListViewHolder {
         mMenuButton.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void bind(Exercise exercise, String exerciseKey) {
-        super.bind(exercise, exerciseKey);
+    public void bind(DayExercise exercise, String exerciseKey) {
+        // todo: set mExerciseName text
         mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

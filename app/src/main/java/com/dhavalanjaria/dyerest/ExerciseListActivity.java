@@ -1,6 +1,5 @@
 package com.dhavalanjaria.dyerest;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -38,7 +37,7 @@ public abstract class ExerciseListActivity extends BaseActivity {
     private FragmentPagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private DatabaseReference mReference;
-    private FloatingActionButton mFloatingActionButton;
+    private FloatingActionButton mAddExerciseButton;
     protected LIST_TYPE mListType;
 
     @Override
@@ -55,8 +54,8 @@ public abstract class ExerciseListActivity extends BaseActivity {
 
             private final Fragment[] mFragments = new Fragment[] {
                     // Add the WorkoutDay to each fragment.
-                    EditDayLiftingExercisesFragment.newInstance(mListType),
-                    EditDayCardioExercisesFragment.newInstance(mListType)
+                    EditDayLiftingExercisesFragment.newInstance(mListType, mReference.toString()),
+                    EditDayCardioExercisesFragment.newInstance(mListType, mReference.toString())
             };
 
             private final String[] tabHeadings = new String[] {
@@ -86,11 +85,13 @@ public abstract class ExerciseListActivity extends BaseActivity {
         TabLayout tabLayout = findViewById(R.id.exercise_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        mFloatingActionButton = findViewById(R.id.add_exercise_button);
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+        mAddExerciseButton = findViewById(R.id.add_exercise_button);
+        mAddExerciseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = EditExerciseActivity.newIntent(ExerciseListActivity.this);
+                DatabaseReference reference = BaseActivity.getRootDataReference();
+                reference = reference.child("exercises").push().getRef();
+                Intent intent = EditExerciseActivity.newIntent(ExerciseListActivity.this, reference.toString());
                 startActivity(intent);
             }
         });
@@ -117,19 +118,19 @@ public abstract class ExerciseListActivity extends BaseActivity {
     }
 
 
-    public ExerciseListViewHolder createExerciseListViewHolder(LIST_TYPE type, View v) {
-        switch (type) {
-            case ADD_TO_DAY:
-                return new AddExerciseToDayViewHolder(v);
-            case ALL_EXERCISE_LIST:
-                return new ListAllExercisesViewHolder(v);
-            case NONE:
-                return null;
-        }
-        return null;
-        // Note: an ENUM is used here because it is easily serializable and can be passed to the
-        // Lifting / Cardio exercise fragments so that they can get the ViewHolder they require.
-    }
+//    public ExerciseListViewHolder createExerciseListViewHolder(LIST_TYPE type, View v) {
+//        switch (type) {
+//            case ADD_TO_DAY:
+//                return new AddExerciseToDayViewHolder(v);
+//            case ALL_EXERCISE_LIST:
+//                return new ListAllExercisesViewHolder(v);
+//            case NONE:
+//                return null;
+//        }
+//        return null;
+//        // Note: an ENUM is used here because it is easily serializable and can be passed to the
+//        // Lifting / Cardio exercise fragments so that they can get the ViewHolder they require.
+//    }
 
     @Override
     public Query getQuery() {

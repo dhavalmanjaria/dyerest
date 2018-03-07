@@ -5,6 +5,8 @@ package com.dhavalanjaria.dyerest.models;
  */
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This model contains metadata for a specific exercise performed on a specific day. This will be
@@ -14,15 +16,17 @@ public class DayExercise {
     public String exerciseKey;
     public int sequenceNumber;
     public String exerciseType;
+    public int totalPoints;
 
     public DayExercise() {
         // For DataSnapshot
     }
 
-    public DayExercise(String exerciseKey, int sequenceNumber, String exerciseType) {
+    public DayExercise(String exerciseKey, int sequenceNumber, String exerciseType, int totalPoints) {
         this.exerciseKey = exerciseKey;
         this.sequenceNumber = sequenceNumber;
         this.exerciseType = exerciseType;
+        this.totalPoints = totalPoints;
     }
 
     public String getExerciseKey() {
@@ -47,5 +51,22 @@ public class DayExercise {
 
     public void setExerciseType(String exerciseType) {
         this.exerciseType = exerciseType;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("exerciseKey", getExerciseKey());
+        map.put("sequenceNumber", getSequenceNumber());
+        map.put("totalPoints", getTotalPoints());
+
+        return map;
     }
 }

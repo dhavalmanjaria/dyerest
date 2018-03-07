@@ -3,8 +3,10 @@ package com.dhavalanjaria.dyerest.models;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
@@ -82,11 +84,11 @@ public class MockData {
         return retVal;
     }
 
-    public static LinkedList<Exercise> getRandomExercises() {
+    public static List<Exercise> getRandomExercises() {
         List<Exercise> exercises = getLiftingExercises();
         exercises.addAll(getCardioExercises());
 
-        return (LinkedList<Exercise>) exercises;
+        return exercises;
     }
 
     public static List<WorkoutDay> getWorkoutDays() {
@@ -95,7 +97,7 @@ public class MockData {
         for(int i = 1; i < 4; i++) {
             WorkoutDay day = new WorkoutDay();
             day.setName("Day " + i);
-            day.setExercises(getRandomExercises());
+            day.setExercises(new HashMap<String, Object>());
             retval.add(day);
         }
         return retval;

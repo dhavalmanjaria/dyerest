@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest.viewholders;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -15,20 +16,26 @@ import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.AddExerciseToDayActivity;
+import com.dhavalanjaria.dyerest.BaseActivity;
 import com.dhavalanjaria.dyerest.EditDaySequenceActivity;
-import com.dhavalanjaria.dyerest.ExerciseListActivity;
-import com.dhavalanjaria.dyerest.ListAllExerciseActivity;
 import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
+import com.dhavalanjaria.dyerest.models.DayExercise;
 import com.dhavalanjaria.dyerest.models.Exercise;
-import com.dhavalanjaria.dyerest.models.ExerciseMap;
+import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -60,16 +67,25 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         mLaunchButton = itemView.findViewById(R.id.launch_button);
         mEditDayButton = itemView.findViewById(R.id.edit_day_button);
 
-        mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
-                LinearLayoutManager.HORIZONTAL, false));
-
     }
 
     public void bind(final WorkoutDay workoutDay, final DatabaseReference workoutDayRef) {
         mDayNameTextView.setText(workoutDay.getName());
 
-        ExerciseAdapter adapter = new ExerciseAdapter(workoutDay);
-        mExerciseListRecycler.setAdapter(adapter);
+        GetScreenshotExerciseAdapter adapter = new GetScreenshotExerciseAdapter(workoutDay);
+
+        Query query = workoutDayRef.child("exercises").orderByChild("sequenceNumber");
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<DayExercise>()
+                .setQuery(query, DayExercise.class)
+                .build();
+
+        ExercisePreviewAdapter exercisePreviewAdapter = new ExercisePreviewAdapter(options);
+        exercisePreviewAdapter.startListening();
+
+        mExerciseListRecycler.setAdapter(exercisePreviewAdapter);
+        mExerciseListRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
+                LinearLayoutManager.HORIZONTAL, false));
+
 
         mLaunchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,14 +143,14 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         adapter.notifyDataSetChanged();
     }
 
-    private class ExerciseViewHolder extends RecyclerView.ViewHolder {
+    private class DayExercisePreviewViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mExercisePoints;
         private TextView mExerciseName;
         private TextView mExerciseTarget;
         private TextView mPreviousDate;
 
-        public ExerciseViewHolder(View itemView) {
+        public DayExercisePreviewViewHolder(View itemView) {
             super(itemView);
 
             mExercisePoints = itemView.findViewById(R.id.exercise_points);
@@ -144,53 +160,94 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         }
 
-        public void bind(Exercise exercise) {
-            mExerciseName.setText(exercise.getName());
+        public void bind(DayExercise exercise) {
+            DatabaseReference ref = BaseActivity.getRootDataReference().child("exercises")
+                    .child(exercise.getExerciseKey());
 
-            StringBuffer targetText = new StringBuffer();
 
-            // Should be getLastExerciseMap or something
-//            List<ExerciseMap> targets = exercise.getExerciseMaps();
-//            for (ExerciseMap t: targets) {
-//                targetText.append(t.getValue() + " ");
-//            }
+            ref.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String name = (String) dataSnapshot.getValue();
+                    mExerciseName.setText(name);
+                }
 
-            targetText.append("0 - 0 - 0");
-            mExerciseTarget.setText(targetText.toString());
-            mExercisePoints.setText("" + exercise.getPoints());
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-            mPreviousDate.setText(formattedDate);
+                }
+            });
+
+            // This method will map the last performed exercise
+            // For now. It will simply show the name.
+
+
+//            StringBuffer targetText = new StringBuffer();
+//
+//            // Should be getLastExerciseMap or something
+////            List<ExerciseMap> targets = exercise.getExerciseMaps();
+////            for (ExerciseMap t: targets) {
+////                targetText.append(t.getValue() + " ");
+////            }
+//
+//            targetText.append("0 - 0 - 0");
+//            mExerciseTarget.setText(targetText.toString());
+//            mExercisePoints.setText("" + exercise.getPoints());
+//
+//            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+//            mPreviousDate.setText(formattedDate);
         }
     }
 
-    private class ExerciseAdapter extends RecyclerView.Adapter<ExerciseViewHolder> {
+    private class ExercisePreviewAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExercisePreviewViewHolder> {
+
+        public ExercisePreviewAdapter(@NonNull FirebaseRecyclerOptions<DayExercise> options) {
+            super(options);
+        }
+
+        @Override
+        protected void onBindViewHolder(@NonNull DayExercisePreviewViewHolder holder, int position, @NonNull DayExercise model) {
+            holder.bind(model);
+
+        }
+
+        @Override
+        public DayExercisePreviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View exerciseView = mLayoutInflater.inflate(R.layout.workout_detail_exercise_item, parent,
+                    false);
+
+            return new DayExercisePreviewViewHolder(exerciseView);
+        }
+    }
+
+    @Deprecated
+    private class GetScreenshotExerciseAdapter extends RecyclerView.Adapter<DayExercisePreviewViewHolder> {
 
         private List<Exercise> mExerciseModel;
 
         // This constructor stays because we need to get exercise from that particular day
         // Using nothing now but it needs to change once we add exercises to the WorkoutDay Firebase
         // schema
-        public ExerciseAdapter(WorkoutDay day) {
-            mExerciseModel = day.getExercises();
+        public GetScreenshotExerciseAdapter(WorkoutDay day) {
+
         }
 
         @Override
-        public ExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DayExercisePreviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View exerciseView = mLayoutInflater.inflate(R.layout.workout_detail_exercise_item, parent,
                     false);
 
-            return new ExerciseViewHolder(exerciseView);
+            return new DayExercisePreviewViewHolder(exerciseView);
         }
 
         @Override
-        public void onBindViewHolder(ExerciseViewHolder holder, int position) {
-            holder.bind(mExerciseModel.get(position));
+        public void onBindViewHolder(DayExercisePreviewViewHolder holder, int position) {
+
         }
 
         @Override
         public int getItemCount() {
-           return mExerciseModel.size();
+           return 0;
         }
     }
 

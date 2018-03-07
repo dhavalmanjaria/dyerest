@@ -16,7 +16,7 @@ import com.google.firebase.database.Query;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    public String getUserId() {
+    public static String getUserId() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
@@ -25,8 +25,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      * is separate from the users tree and any other tree that might exist.
      * @return DatabaseReference -- The root of the app data tree.
      */
-    protected static DatabaseReference getRootDataReference() {
-        return FirebaseDatabase.getInstance().getReference().child("dyerest");
+    public static DatabaseReference getRootDataReference() {
+        // Not sure what the consequences of all of these functions being static are.
+        return FirebaseDatabase.getInstance().getReference().child("dyerest").child(getUserId());
     }
 
     /**

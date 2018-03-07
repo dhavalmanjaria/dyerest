@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.models.DayExercise;
 import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.viewholders.DayExerciseViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.DayExerciseSequenceViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
@@ -65,7 +65,7 @@ public class EditDaySequenceActivity extends BaseActivity {
         return mWorkoutDayReference.orderByKey();
     }
 
-    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayExerciseViewHolder> {
+    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayExerciseSequenceViewHolder> {
 
         private List<DayExercise> mModel;
 
@@ -74,14 +74,14 @@ public class EditDaySequenceActivity extends BaseActivity {
         }
 
         @Override
-        public DayExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DayExerciseSequenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent, false);
 
-            return new DayExerciseViewHolder(v);
+            return new DayExerciseSequenceViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(DayExerciseViewHolder holder, int position) {
+        public void onBindViewHolder(DayExerciseSequenceViewHolder holder, int position) {
             holder.bind(mModel.get(position), mModel.get(position).getExerciseKey());
         }
 
@@ -91,21 +91,21 @@ public class EditDaySequenceActivity extends BaseActivity {
         }
     }
 
-    private class SequenceItemAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExerciseViewHolder> {
+    private class SequenceItemAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExerciseSequenceViewHolder> {
 
         public SequenceItemAdapter(@NonNull FirebaseRecyclerOptions<DayExercise> options) {
             super(options);
         }
 
         @Override
-        public DayExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DayExerciseSequenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent, false);
 
-            return new DayExerciseViewHolder(v);
+            return new DayExerciseSequenceViewHolder(v);
         }
 
         @Override
-        protected void onBindViewHolder(@NonNull DayExerciseViewHolder holder, int position, @NonNull DayExercise model) {
+        protected void onBindViewHolder(@NonNull DayExerciseSequenceViewHolder holder, int position, @NonNull DayExercise model) {
             holder.bind(model, mWorkoutDayReference, getRef(position));
         }
     }

@@ -14,13 +14,13 @@ import com.google.firebase.database.DatabaseReference;
  * Created by Dhaval Anjaria on 2/26/2018.
  */
 
-public class DayExerciseViewHolder extends RecyclerView.ViewHolder {
+public class DayExerciseSequenceViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mSequenceNumberText;
     private TextView mExerciseNameText;
     private TextView mOptionsMenu;
 
-    public DayExerciseViewHolder(View itemView) {
+    public DayExerciseSequenceViewHolder(View itemView) {
         super(itemView);
 
         mSequenceNumberText = itemView.findViewById(R.id.exercise_sequence_number_text);
