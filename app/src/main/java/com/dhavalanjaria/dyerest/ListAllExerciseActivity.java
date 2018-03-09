@@ -16,8 +16,6 @@ import com.google.firebase.database.Query;
  */
 
 public class ListAllExerciseActivity extends ExerciseListActivity {
-
-
     public static Intent newIntent(Context context, DatabaseReference workoutDayRef) {
         Intent intent = new Intent(context, ListAllExerciseActivity.class);
         //TODO: See Option A for Schema.

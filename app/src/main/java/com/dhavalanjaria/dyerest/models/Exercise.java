@@ -1,53 +1,28 @@
 package com.dhavalanjaria.dyerest.models;
 
-import android.support.annotation.Nullable;
-
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by Dhaval Anjaria on 2/6/2018.
+ * Created by Dhaval Anjaria on 3/7/2018.
  */
 
 public class Exercise {
 
     public String name;
-    public int points;
-
-    public List<ExerciseMap> mExerciseMaps;
-
-    // Here we see the covariance-contravariance thing
-    public List<ExerciseMap> getExerciseMaps() {
-        return mExerciseMaps;
-    }
-
-    protected void setExerciseMaps(List<ExerciseMap> exerciseMaps) {
-        this.mExerciseMaps = exerciseMaps;
-    }
-
-    @Nullable
-    public int totalSets;
-
-    @Nullable
-    public int poundage;
-
-    @Nullable
-    public int duration;
-
-    @Nullable
-    public int distance;
-
-    @Nullable
-    public int intensity;
-
-    @Nullable
-    public int averageSpeed;
-
-    @Nullable
-    public int incline;
-
-    public String [] days;
+    public String exerciseType;
+    public int totalPoints;
+    public Map<String, Object> exerciseFields;
 
     public Exercise() {
+        // For DataSnapshot
+    }
+
+    public Exercise(String name, String exerciseType, int totalPoints, Map<String, Object> exerciseFields) {
+        this.name = name;
+        this.exerciseType = exerciseType;
+        this.totalPoints = totalPoints;
+        this.exerciseFields = exerciseFields;
     }
 
     public String getName() {
@@ -58,91 +33,38 @@ public class Exercise {
         this.name = name;
     }
 
-    public int getPoints() {
-        return points;
+    public String getExerciseType() {
+        return exerciseType;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
     }
 
-    @Nullable
-    public int getTotalSets() {
-        return totalSets;
+    public int getTotalPoints() {
+        return totalPoints;
     }
 
-    public void setTotalSets(@Nullable int totalSets) {
-        this.totalSets = totalSets;
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
     }
 
-    @Nullable
-    public int getPoundage() {
-        return poundage;
+    public Map<String, Object> getExerciseFields() {
+        return exerciseFields;
     }
 
-    public void setPoundage(@Nullable int poundage) {
-        this.poundage = poundage;
+    public void setExerciseFields(Map<String, Object> exerciseFields) {
+        this.exerciseFields = exerciseFields;
     }
 
-    @Nullable
-    public int getDuration() {
-        return duration;
+    public Map<String, Object> toMap() {
+        Map<String, Object> exerciseDetails = new HashMap<>();
+
+        exerciseDetails.put("name", getName());
+        exerciseDetails.put("exerciseFields", getExerciseFields()); // Null for now. To be updated with proper exercise fields later
+        exerciseDetails.put("totalPoints", getTotalPoints());
+        exerciseDetails.put("exerciseType", getExerciseType());
+
+        return exerciseDetails;
     }
-
-    public void setDuration(@Nullable int duration) {
-        this.duration = duration;
-    }
-
-    @Nullable
-    public int getDistance() {
-        return distance;
-    }
-
-    public void setDistance(@Nullable int distance) {
-        this.distance = distance;
-    }
-
-    @Nullable
-    public int getIntensity() {
-        return intensity;
-    }
-
-    public void setIntensity(@Nullable int intensity) {
-        this.intensity = intensity;
-    }
-
-    @Nullable
-    public int getAverageSpeed() {
-        return averageSpeed;
-    }
-
-    public void setAverageSpeed(@Nullable int averageSpeed) {
-        this.averageSpeed = averageSpeed;
-    }
-
-    @Nullable
-    public int getIncline() {
-        return incline;
-    }
-
-    public void setIncline(@Nullable int incline) {
-        this.incline = incline;
-    }
-
-    public String[] getDays() {
-        return days;
-    }
-
-    public void setDays(String[] days) {
-        this.days = days;
-    }
-
-    public Exercise(String name) {
-        this.name = name;
-    }
-
-
-    //TODO: Map Sets to points somehow.
-
-    //TODO: See toMap() to exclude fields from an exercise.
 }

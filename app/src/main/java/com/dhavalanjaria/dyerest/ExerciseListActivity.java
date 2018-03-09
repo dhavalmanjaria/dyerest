@@ -91,7 +91,7 @@ public abstract class ExerciseListActivity extends BaseActivity {
             public void onClick(View v) {
                 DatabaseReference reference = BaseActivity.getRootDataReference();
                 reference = reference.child("exercises").push().getRef();
-                Intent intent = EditExerciseActivity.newIntent(ExerciseListActivity.this, reference.toString());
+                Intent intent = EditExerciseActivity.newIntent(ExerciseListActivity.this);
                 startActivity(intent);
             }
         });

@@ -53,5 +53,5 @@ public class ExerciseCommentsActivity extends BaseActivity {
 /*
 *Made some major changes with the UI and Dialogs
 
-This commit brings several updates. The first being that Exercise Comments are now wired up to the rest of the Activities and so is the Exercise Guide feature. These activities are not yet hooked up to Firebase however. This comment also brings changes to the default Button style which has now been updated for all Activities. Structural changes are also made in the way the code uses DialogFragments. There is now a common EditDialogFragment that connects
+This commit brings several updates. The first being that ToDeleteExercise Comments are now wired up to the rest of the Activities and so is the ToDeleteExercise Guide feature. These activities are not yet hooked up to Firebase however. This comment also brings changes to the default Button style which has now been updated for all Activities. Structural changes are also made in the way the code uses DialogFragments. There is now a common EditDialogFragment that connects
  */

@@ -11,11 +11,11 @@ import java.util.LinkedList;
  * values.
  */
 @Deprecated
-public class LiftingExercise extends Exercise {
+public class LiftingToDeleteExercise extends ToDeleteExercise {
 
     private LinkedList<ExerciseMap> mExerciseMap;
 
-    public LiftingExercise() {
+    public LiftingToDeleteExercise() {
         mExerciseMap = new LinkedList<>();
 
         mExerciseMap.add(new ExerciseMap("poundage", 0));

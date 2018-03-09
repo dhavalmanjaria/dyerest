@@ -32,10 +32,10 @@
     <string name="hint_password">Password</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
-    <string name="no_exercises">No exercises yet. Add them from the edit button.</string>
+    <string name="no_exercises">No toDeleteExercises yet. Add them from the edit button.</string>
     <string name="edit_all_exercises">Edit All Exercises</string>
     <string name="unicode_horizontal_ellipsis"><![CDATA[&#8230;]]></string>
-    <string name="lifting_exercise_field_tip">For Lifting exercises, each field will be added to all the sets.</string>
+    <string name="lifting_exercise_field_tip">For Lifting toDeleteExercises, each field will be added to all the sets.</string>
     <string name="max_sets">Max Sets</string>
     <string name="view_comments">View Comments</string>
     <string name="sign_out">Sign Out</string>

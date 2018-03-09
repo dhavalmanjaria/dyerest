@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.DayExercise;
-import com.dhavalanjaria.dyerest.models.Exercise;
 import com.google.firebase.database.DatabaseReference;
 
 /**

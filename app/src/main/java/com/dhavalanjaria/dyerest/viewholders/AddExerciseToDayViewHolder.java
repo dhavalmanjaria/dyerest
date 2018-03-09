@@ -53,10 +53,15 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
                     getSequenceNumberQuery(dayReference).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            DataSnapshot lastExerciseSnap = dataSnapshot.getChildren().iterator().next();
-                            DayExercise lastExercise = lastExerciseSnap.getValue(DayExercise.class);
 
-                            exercise.setSequenceNumber(lastExercise.getSequenceNumber() + 1);
+                            int lastSequenceNumber = 0;
+
+                            if (dataSnapshot.getValue() != null) {
+                                DataSnapshot lastExerciseSnap = dataSnapshot.getChildren().iterator().next();
+                                DayExercise lastExercise = lastExerciseSnap.getValue(DayExercise.class);
+                                lastSequenceNumber = lastExercise.getSequenceNumber();
+                            }
+                            exercise.setSequenceNumber(lastSequenceNumber + 1);
                             Map<String, Object> dayExercises = exercise.toMap();
                             dayReference.child("exercises").push().updateChildren(dayExercises);
                         }
@@ -93,6 +98,7 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
                 while (children.hasNext()) {
+
                     DataSnapshot childSnap = children.next();
                     String key = childSnap.child("exerciseKey").getValue().toString();
                     Log.i(TAG, key);

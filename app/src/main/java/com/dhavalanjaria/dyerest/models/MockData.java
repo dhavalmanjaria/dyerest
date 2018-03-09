@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
@@ -26,50 +25,50 @@ public class MockData {
         return retVal;
     }
 
-    public static LinkedList<Exercise> getLiftingExercises() {
-        LinkedList<Exercise> retVal = new LinkedList<>();
+    public static LinkedList<ToDeleteExercise> getLiftingExercises() {
+        LinkedList<ToDeleteExercise> retVal = new LinkedList<>();
 
         LinkedList<ExerciseMap> map = new LinkedList<>();
         map.add(new ExerciseMap("Max Sets", 2));
         map.add(new ExerciseMap("Poundage", 15));
 
-        Exercise squats = new Exercise("Squats");
+        ToDeleteExercise squats = new ToDeleteExercise("Squats");
         squats.setPoundage(20);
 
-        Exercise lunges = new Exercise("Lunges");
+        ToDeleteExercise lunges = new ToDeleteExercise("Lunges");
         lunges.setPoundage(20);
 
-        Exercise legpress = new Exercise("Leg Press");
+        ToDeleteExercise legpress = new ToDeleteExercise("Leg Press");
         legpress.setPoundage(20);
 
         retVal.add(legpress);
         retVal.add(squats);
         retVal.add(lunges);
 
-        for (Exercise e: retVal) {
+        for (ToDeleteExercise e: retVal) {
             e.setExerciseMaps(map);
         }
 
         return retVal;
     }
 
-    public static List<Exercise> getCardioExercises() {
-        List<Exercise> retVal = new ArrayList<>();
+    public static List<ToDeleteExercise> getCardioExercises() {
+        List<ToDeleteExercise> retVal = new ArrayList<>();
 
         LinkedList<ExerciseMap> map = new LinkedList<>();
         map.add(new ExerciseMap("Duration", 15));
         map.add(new ExerciseMap("Distance", 150));
         map.add(new ExerciseMap("Intensity", 3));
 
-        Exercise treadmill = new Exercise("Treadmill");
+        ToDeleteExercise treadmill = new ToDeleteExercise("Treadmill");
         treadmill.setIntensity(6);
         treadmill.setDuration(15);
 
-        Exercise bicycle = new Exercise("Bicycle");
+        ToDeleteExercise bicycle = new ToDeleteExercise("Bicycle");
         bicycle.setIntensity(6);
         bicycle.setDuration(15);
 
-        Exercise elliptical = new Exercise("Elliptical");
+        ToDeleteExercise elliptical = new ToDeleteExercise("Elliptical");
         elliptical.setIntensity(15);
         elliptical.setDuration(15);
 
@@ -77,18 +76,18 @@ public class MockData {
         retVal.add(treadmill);
         retVal.add(elliptical);
 
-        for (Exercise e: retVal) {
+        for (ToDeleteExercise e: retVal) {
             e.setExerciseMaps(map);
         }
 
         return retVal;
     }
 
-    public static List<Exercise> getRandomExercises() {
-        List<Exercise> exercises = getLiftingExercises();
-        exercises.addAll(getCardioExercises());
+    public static List<ToDeleteExercise> getRandomExercises() {
+        List<ToDeleteExercise> toDeleteExercises = getLiftingExercises();
+        toDeleteExercises.addAll(getCardioExercises());
 
-        return exercises;
+        return toDeleteExercises;
     }
 
     public static List<WorkoutDay> getWorkoutDays() {
@@ -104,12 +103,12 @@ public class MockData {
     }
 
     public static List<DayExercise> getWorkoutSequence() {
-        List<Exercise> exercises = getRandomExercises();
+        List<ToDeleteExercise> toDeleteExercises = getRandomExercises();
 
         List<DayExercise> retVal = new ArrayList<>();
 
         int i = 1;
-        for (Exercise e: exercises) {
+        for (ToDeleteExercise e: toDeleteExercises) {
             DayExercise sequenceItem = new DayExercise();
             sequenceItem.setSequenceNumber(i++);
             sequenceItem.setExerciseType("LIFTING");
@@ -121,15 +120,15 @@ public class MockData {
     }
 
     public static List<DayPerformed> getDayPerformed() {
-        List<Exercise> exercises = getRandomExercises();
+        List<ToDeleteExercise> toDeleteExercises = getRandomExercises();
 
         WorkoutDay day = getWorkoutDays().get(0);
 
         final Calendar cal = Calendar.getInstance();
 
         ArrayList<DayPerformed> retval = new ArrayList<DayPerformed>();
-        int i = exercises.size();
-        for (Exercise e: exercises) {
+        int i = toDeleteExercises.size();
+        for (ToDeleteExercise e: toDeleteExercises) {
             DayPerformed dayPerformed = new DayPerformed();
 
             cal.add(Calendar.DATE, i--);
@@ -153,12 +152,12 @@ public class MockData {
     }
 
     public static List<ExercisePerformed> getExercisesPerformed() {
-        List<Exercise> exercises = getRandomExercises();
+        List<ToDeleteExercise> toDeleteExercises = getRandomExercises();
 
         WorkoutDay day = getWorkoutDays().get(0);
 
         ArrayList<ExercisePerformed> retval = new ArrayList<ExercisePerformed>();
-        for (Exercise e: exercises) {
+        for (ToDeleteExercise e: toDeleteExercises) {
             ExercisePerformed exercisePerformed = new ExercisePerformed();
             exercisePerformed.setDatePerformed(new Date());
             exercisePerformed.setPoints(20);

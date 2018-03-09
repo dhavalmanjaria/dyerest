@@ -9,7 +9,7 @@ import java.util.Date;
 // Name could be worked on
 public class DayPerformed {
     public Date datePerformed;
-    public String exerciseKey; // Exercise Key may not really be needed.
+    public String exerciseKey; // ToDeleteExercise Key may not really be needed.
     public String dayKey;
     public int points;
 

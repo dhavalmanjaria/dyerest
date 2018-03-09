@@ -22,20 +22,16 @@ import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.DayExercise;
-import com.dhavalanjaria.dyerest.models.Exercise;
-import com.dhavalanjaria.dyerest.models.MockData;
+import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -223,7 +219,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
     @Deprecated
     private class GetScreenshotExerciseAdapter extends RecyclerView.Adapter<DayExercisePreviewViewHolder> {
 
-        private List<Exercise> mExerciseModel;
+        private List<ToDeleteExercise> mToDeleteExerciseModel;
 
         // This constructor stays because we need to get exercise from that particular day
         // Using nothing now but it needs to change once we add exercises to the WorkoutDay Firebase

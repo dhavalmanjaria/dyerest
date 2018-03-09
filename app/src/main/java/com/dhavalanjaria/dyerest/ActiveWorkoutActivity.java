@@ -3,21 +3,15 @@ package com.dhavalanjaria.dyerest;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.dhavalanjaria.dyerest.BaseActivity;
-import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.ActiveWorkoutExerciseFragment;
-import com.dhavalanjaria.dyerest.models.Exercise;
+import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.google.firebase.database.Query;
-
-import java.util.LinkedList;
 
 public class ActiveWorkoutActivity extends BaseActivity {
 
@@ -50,8 +44,8 @@ public class ActiveWorkoutActivity extends BaseActivity {
                 // basically. It is then passed eventually ExerciseDetailViewHolder.
 
                 // / change this
-                Exercise currentExercise = MockData.getCardioExercises().get(position);
-                return ActiveWorkoutExerciseFragment.newInstance(currentExercise);
+                ToDeleteExercise currentToDeleteExercise = MockData.getCardioExercises().get(position);
+                return ActiveWorkoutExerciseFragment.newInstance(currentToDeleteExercise);
             }
 
             @Override

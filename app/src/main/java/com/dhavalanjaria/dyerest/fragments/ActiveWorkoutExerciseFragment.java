@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.ExerciseMap;
+import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseDetailViewHolder;
 
 import org.w3c.dom.Text;
@@ -26,12 +27,12 @@ import java.util.List;
 
 public class ActiveWorkoutExerciseFragment extends Fragment {
 
-    protected static Exercise mExercise;
+    protected static ToDeleteExercise mExercise;
     private RecyclerView mExerciseRecycler;
     private TextView mExerciseNameText;
 
     // The exercise position should really be retrieved from the actual model
-    public static ActiveWorkoutExerciseFragment newInstance(Exercise exercise) {
+    public static ActiveWorkoutExerciseFragment newInstance(ToDeleteExercise exercise) {
 
         Bundle args = new Bundle();
         mExercise = exercise;

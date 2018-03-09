@@ -16,9 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
-import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutDayViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -46,6 +44,7 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
     private RecyclerView mRecyclerContainer;
     private WorkoutDayAdapter mDayAdapter;
     private TextView mNoDayText;
+    private String mWorkoutId;
 
     public static Intent newIntent(Context context, String workoutId) {
         Intent intent = new Intent(context, WorkoutDetailActivity.class);
@@ -59,15 +58,13 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_detail);
 
-        String workoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
+        mWorkoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
 
         if (savedInstanceState != null) {
-            workoutId = savedInstanceState.getString(KEY_WORKOUT_ID);
+            mWorkoutId = savedInstanceState.getString(KEY_WORKOUT_ID);
         }
 
         mWorkoutDaysReference = getRootDataReference()
-                .child("workouts")
-                .child(workoutId)
                 .child("days");
 
         mRecyclerContainer = (RecyclerView) findViewById(R.id.workout_detail_container);
@@ -89,6 +86,13 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(newWorkoutDayKey, newDay.toMap());
         mWorkoutDaysReference.updateChildren(childUpdates);
+
+        // Update in workouts
+        DatabaseReference workoutRef = BaseActivity.getRootDataReference()
+                .child("workouts")
+                .child(mWorkoutId);
+        workoutRef.child("days").child(newWorkoutDayKey).setValue(true);
+
         mDayAdapter.notifyDataSetChanged();
     }
 
