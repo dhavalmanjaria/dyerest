@@ -43,6 +43,7 @@ public class ExerciseFieldViewHolder extends RecyclerView.ViewHolder implements 
     public void bind(final ExerciseField exerciseField) {
 
         mExerciseFieldName.setText(exerciseField.getName());
+
         mMenuButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

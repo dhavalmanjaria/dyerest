@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -71,11 +73,6 @@ public class EditExerciseActivity extends BaseActivity {
 
         final String exerciseUrl = (String) getIntent().getSerializableExtra(EXTRA_EXERCISE_ID_URL);
 
-        // This is for when we're adding a new exercise
-        if (exerciseUrl != null)
-            mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
-        else
-            mExerciseRef = null;
 
         mGuideButton = findViewById(R.id.edit_exercise_guide_button);
         mGuideButton.setOnClickListener(new View.OnClickListener() {
@@ -96,90 +93,12 @@ public class EditExerciseActivity extends BaseActivity {
 
         mCardioRadio = findViewById(R.id.cardio_radio);
         mLiftingRadio = findViewById(R.id.lifting_radio);
+        mCardioRadio.setOnCheckedChangeListener(new CheckChangedListener());
+        mLiftingRadio.setOnCheckedChangeListener(new CheckChangedListener());
 
         mSaveButton = findViewById(R.id.save_exercise_button);
 
-        // Maybe too many if's
-        if (mExerciseRef != null) {
-            mExerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Exercise exercise = dataSnapshot.getValue(Exercise.class);
-
-                    mNameEdit.setText(exercise.getName());
-
-                    // This if really means that it should go in an AddExercise activity
-                    if (exercise.getExerciseFields() != null) {
-                        Iterator<String> fieldIter = exercise.getExerciseFields().keySet().iterator();
-                        while (fieldIter.hasNext()) {
-                            mExerciseFieldList.add(new ExerciseField(fieldIter.next(), true));
-                        }
-                    }
-
-                    if (exercise.getExerciseType().equalsIgnoreCase("lifting")) {
-                        mLiftingRadio.setChecked(true);
-                    } else if (exercise.getExerciseType().equalsIgnoreCase("cardio")) {
-                        mCardioRadio.setChecked(true);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(TAG, databaseError.getMessage());
-                    Log.e(TAG, databaseError.getDetails());
-                }
-            });
-        }
-
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String nameText = mNameEdit.getText().toString();
-                String exerciseType = "";
-
-                if (nameText.trim().length() <= 0) {
-                    Toast.makeText(EditExerciseActivity.this, "The name cannot be empty", Toast.LENGTH_SHORT)
-                        .show();
-                    return;
-                }
-
-                // This should probably use the ToDeleteExercise Types ENUM later
-                if (mCardioRadio.isChecked()) {
-                    exerciseType = "CARDIO";
-                } else if (mLiftingRadio.isChecked()) {
-                    exerciseType = "LIFTING";
-                } else if (mCardioRadio.isChecked() == false && mLiftingRadio.isChecked() == false) {
-                    Toast.makeText(EditExerciseActivity.this, "Please select exercise type", Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
-
-                // A proper model class isn't created yet, so we create our own map.
-                Exercise exercise = new Exercise();
-                exercise.setName(mNameEdit.getText().toString());
-                exercise.setExerciseType(exerciseType);
-                exercise.setTotalPoints(0);
-
-                Map<String, Object> fieldMap = new HashMap<>();
-
-                for (ExerciseField field: mExerciseFieldList) {
-                    fieldMap.put(field.getName(), field.getTrue());
-                }
-
-                exercise.setExerciseFields(fieldMap); // For Now
-                Map<String, Object> exerciseDetails = exercise.toMap();
-
-                // Create a new exercise if it doesn't exist.
-                if (mExerciseRef == null) {
-                    String newExercise = BaseActivity.getRootDataReference().child("exercises").push().getKey();
-                    mExerciseRef = BaseActivity.getRootDataReference().child("exercises").child(newExercise);
-                }
-                mExerciseRef.updateChildren(exerciseDetails);
-
-                Toast.makeText(EditExerciseActivity.this, "Exercise Added", Toast.LENGTH_SHORT).show();
-            }
-        });
+        mSaveButton.setOnClickListener(new SaveClickListener());
 
         mAddFieldEdit = findViewById(R.id.add_field_edit);
         mAddExerciseFieldButton = findViewById(R.id.add_exercise_field_button);
@@ -191,6 +110,15 @@ public class EditExerciseActivity extends BaseActivity {
                 mExerciseFieldAdapter.notifyDataSetChanged();
             }
         });
+
+        // This is for when we're adding a new exercise
+        if (exerciseUrl != null) {
+            mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
+            setFieldsFromReference(mExerciseRef);
+        }
+        else
+            mExerciseRef = null;
+
     }
 
     public static Intent newIntent(Context context, String exerciseIdUrl) {
@@ -239,4 +167,97 @@ public class EditExerciseActivity extends BaseActivity {
     public Query getQuery() {
         return mExerciseRef.orderByChild("exerciseFields");
     }
-}
+
+    private class CheckChangedListener implements CompoundButton.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        }
+    }
+
+    private class SaveClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+
+            String nameText = mNameEdit.getText().toString();
+            String exerciseType = "";
+
+            if (nameText.trim().length() <= 0) {
+                Toast.makeText(EditExerciseActivity.this, "The name cannot be empty", Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            }
+
+            // This should probably use the ToDeleteExercise Types ENUM later
+            if (mCardioRadio.isChecked()) {
+                exerciseType = "CARDIO";
+            } else if (mLiftingRadio.isChecked()) {
+                exerciseType = "LIFTING";
+            } else if (mCardioRadio.isChecked() == false && mLiftingRadio.isChecked() == false) {
+                Toast.makeText(EditExerciseActivity.this, "Please select exercise type", Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            }
+
+            // A proper model class isn't created yet, so we create our own map.
+            Exercise exercise = new Exercise();
+            exercise.setName(mNameEdit.getText().toString());
+            exercise.setExerciseType(exerciseType);
+            exercise.setTotalPoints(0);
+
+            Map<String, Object> fieldMap = new HashMap<>();
+
+            for (ExerciseField field: mExerciseFieldList) {
+                fieldMap.put(field.getName(), field.getTrue());
+            }
+
+            exercise.setExerciseFields(fieldMap); // For Now
+            Map<String, Object> exerciseDetails = exercise.toMap();
+
+            // Create a new exercise if it doesn't exist.
+            if (mExerciseRef == null) {
+                String newExercise = BaseActivity.getRootDataReference().child("exercises").push().getKey();
+                mExerciseRef = BaseActivity.getRootDataReference().child("exercises").child(newExercise);
+            }
+            mExerciseRef.updateChildren(exerciseDetails);
+
+            Toast.makeText(EditExerciseActivity.this, "Exercise Added", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setFieldsFromReference(DatabaseReference exerciseRef) {
+        if (exerciseRef == null)
+            return;;
+
+            exerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Exercise exercise = dataSnapshot.getValue(Exercise.class);
+
+                    mNameEdit.setText(exercise.getName());
+
+                    // This if really means that it should go in an AddExercise activity
+                    if (exercise.getExerciseFields() != null) {
+                        Iterator<String> fieldIter = exercise.getExerciseFields().keySet().iterator();
+                        while (fieldIter.hasNext()) {
+                            mExerciseFieldList.add(new ExerciseField(fieldIter.next(), true));
+                        }
+                    }
+
+                    if (exercise.getExerciseType().equalsIgnoreCase("lifting")) {
+                        mLiftingRadio.setChecked(true);
+                    } else if (exercise.getExerciseType().equalsIgnoreCase("cardio")) {
+                        mCardioRadio.setChecked(true);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(TAG, databaseError.getMessage());
+                    Log.e(TAG, databaseError.getDetails());
+                }
+            });
+        }
+    }
+
+

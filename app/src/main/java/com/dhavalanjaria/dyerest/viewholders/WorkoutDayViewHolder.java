@@ -156,12 +156,13 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         }
 
-        public void bind(DayExercise exercise) {
-            DatabaseReference ref = BaseActivity.getRootDataReference().child("exercises")
-                    .child(exercise.getExerciseKey());
+        public void bind(DayExercise exercise, DatabaseReference ref) {
+            String exerciseKey = ref.getKey();
 
+            DatabaseReference exerciseRef = BaseActivity.getRootDataReference().child("exercises")
+                    .child(exerciseKey);
 
-            ref.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            exerciseRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String name = (String) dataSnapshot.getValue();
@@ -203,7 +204,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         @Override
         protected void onBindViewHolder(@NonNull DayExercisePreviewViewHolder holder, int position, @NonNull DayExercise model) {
-            holder.bind(model);
+            holder.bind(model, getRef(position));
 
         }
 

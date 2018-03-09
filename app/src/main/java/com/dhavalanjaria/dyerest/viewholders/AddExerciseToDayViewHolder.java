@@ -61,9 +61,10 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
                                 DayExercise lastExercise = lastExerciseSnap.getValue(DayExercise.class);
                                 lastSequenceNumber = lastExercise.getSequenceNumber();
                             }
+
                             exercise.setSequenceNumber(lastSequenceNumber + 1);
                             Map<String, Object> dayExercises = exercise.toMap();
-                            dayReference.child("exercises").push().updateChildren(dayExercises);
+                            dayReference.child("exercises").child(exerciseRef.getKey()).updateChildren(dayExercises);
                         }
 
                         @Override
@@ -74,12 +75,12 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
 
 
                 } else {
-                    Query query = dayReference.child("exercises").orderByChild("exerciseKey").equalTo(exerciseRef.getKey());
+                    Query query = dayReference.child("exercises").equalTo(exerciseRef.getKey());
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.d(TAG, dataSnapshot.getChildren().iterator().next().getKey());
-                            dayReference.child("exercises").child(dataSnapshot.getChildren().iterator().next().getKey()).removeValue();
+                            dayReference.child("exercises")
+                                    .child(exerciseRef.getKey()).removeValue();
                         }
 
                         @Override
@@ -93,22 +94,22 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
 
         final List<String> exerciseKeys = new LinkedList<String>();
 
-        dayReference.child("exercises").addListenerForSingleValueEvent(new ValueEventListener() {
+        dayReference.child("exercises");
+
+        DatabaseReference dayExerciseRef = dayReference.child("exercises").child(exerciseRef.getKey());
+        dayExerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> children = dataSnapshot.getChildren().iterator();
-                while (children.hasNext()) {
-
-                    DataSnapshot childSnap = children.next();
-                    String key = childSnap.child("exerciseKey").getValue().toString();
-                    Log.i(TAG, key);
+                if (dataSnapshot.getValue() != null) {
+                    String key = dataSnapshot.getKey();
                     exerciseKeys.add(key);
                 }
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.toString());
+
             }
         });
 

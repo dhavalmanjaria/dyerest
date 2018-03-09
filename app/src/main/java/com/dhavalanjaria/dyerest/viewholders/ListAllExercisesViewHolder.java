@@ -34,6 +34,7 @@ public class ListAllExercisesViewHolder extends RecyclerView.ViewHolder {
 
     private ImageButton mMenuButton;
     private TextView mExerciseName;
+    private TextView mMaxSets;
 
     public ListAllExercisesViewHolder(View itemView) {
         super(itemView);
@@ -57,60 +58,28 @@ public class ListAllExercisesViewHolder extends RecyclerView.ViewHolder {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.edit_item:
-                                Intent intent = EditExerciseActivity.newIntent(itemView.getContext(), exerciseRef.toString());
+                                Intent intent = EditExerciseActivity.newIntent(itemView.getContext(),
+                                        exerciseRef.toString());
                                 itemView.getContext().startActivity(intent);
                                 return true;
                             case R.id.delete_item:
                                 final DatabaseReference daysRef = BaseActivity.getRootDataReference().child("days");
 
-                                daysRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                Query query = daysRef.orderByChild("exercises").equalTo(exerciseRef.getKey());
+
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Iterator<DataSnapshot> daySnapIter = dataSnapshot.getChildren().iterator();
-
-                                        while (daySnapIter.hasNext()) {
-                                            DataSnapshot daySnap = daySnapIter.next();
-
-                                            Query query = daySnap.child("exercises").getRef().orderByChild("exerciseKey")
-                                                    .equalTo(exerciseRef.getKey());
-
-                                            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    Log.d(TAG, "exerciseKey:" + dataSnapshot.getValue());
-                                                    Log.d(TAG, "exerciseRef:" + exerciseRef.getKey());
-
-                                                    // DataSnapshot still points to parent element, which is "exercises"
-                                                    // So by iterating to the next, we get a reference to the first child
-                                                    // which, because of the Query, is our only child. This way we can get
-                                                    // the exact key to delete.
-                                                    String dayExerciseKey;
-                                                    if (dataSnapshot.getValue() != null)
-                                                         dayExerciseKey = (String) dataSnapshot.getChildren()
-                                                                .iterator()
-                                                                .next()
-                                                                .getKey();
-                                                    else
-                                                        return;
-
-                                                    dataSnapshot.getRef().child(dayExerciseKey).removeValue();
-                                                }
-
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-                                                    Log.e(TAG, databaseError.getMessage());
-                                                    Log.e(TAG, databaseError.getDetails());
-                                                }
-                                            });
-                                        }
+                                        String dayKey = dataSnapshot.child("exercises").getKey();
+                                        Log.d(TAG, "dayKey : " + dayKey);
                                     }
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-                                        Log.e(TAG, databaseError.getMessage());
-                                        Log.e(TAG, databaseError.getDetails());
+
                                     }
                                 });
+
 
                                 // Also delete the actual exercise. The code to delete an exercise
                                 // from a day should be tied to the ChildRemoved method of the listener

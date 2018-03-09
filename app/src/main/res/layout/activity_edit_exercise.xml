@@ -30,7 +30,8 @@
         android:id="@+id/max_sets_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/max_sets_text"
@@ -89,10 +90,10 @@
     </android.support.constraint.ConstraintLayout>
 
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/lifting_exercise_field_tip"/>-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lifting_exercise_field_tip"/>
 
     <RadioGroup
         android:layout_width="match_parent"

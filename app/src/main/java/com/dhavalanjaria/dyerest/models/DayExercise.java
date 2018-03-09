@@ -63,7 +63,6 @@ public class DayExercise {
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("exerciseKey", getExerciseKey());
         map.put("sequenceNumber", getSequenceNumber());
         map.put("totalPoints", getTotalPoints());
 
