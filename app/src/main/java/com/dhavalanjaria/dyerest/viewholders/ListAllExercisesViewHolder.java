@@ -65,18 +65,21 @@ public class ListAllExercisesViewHolder extends RecyclerView.ViewHolder {
                             case R.id.delete_item:
                                 final DatabaseReference daysRef = BaseActivity.getRootDataReference().child("days");
 
-                                Query query = daysRef.orderByChild("exercises").equalTo(exerciseRef.getKey());
-
-                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                daysRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String dayKey = dataSnapshot.child("exercises").getKey();
-                                        Log.d(TAG, "dayKey : " + dayKey);
+                                        for (DataSnapshot daysSnap: dataSnapshot.getChildren()) {
+                                            daysSnap.child("exercises")
+                                                    .getRef()
+                                                    .child(exerciseRef.getKey())
+                                                    .removeValue();
+                                        }
                                     }
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-
+                                        Log.d(TAG, databaseError.getMessage());
+                                        Log.d(TAG, databaseError.getDetails());
                                     }
                                 });
 
