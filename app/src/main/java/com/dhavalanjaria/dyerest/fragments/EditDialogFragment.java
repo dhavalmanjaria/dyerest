@@ -28,6 +28,7 @@ public class EditDialogFragment extends DialogFragment {
     private String mTitle;
     private OnDialogCompletedListener mDialogCompletedListener;
     private EditText mEditText;
+    private DialogInterface.OnClickListener mCancelListener;
 
     public EditDialogFragment(OnDialogCompletedListener listener) {
         this.mDialogCompletedListener = listener;
@@ -52,6 +53,10 @@ public class EditDialogFragment extends DialogFragment {
 
     public OnDialogCompletedListener getDialogCompletedListener() {
         return mDialogCompletedListener;
+    }
+
+    public void setCancelListener(DialogInterface.OnClickListener cancelListener) {
+        mCancelListener = cancelListener;
     }
 
     public void setDialogCompletedListener(OnDialogCompletedListener dialogCompletedListener) {
@@ -84,7 +89,7 @@ public class EditDialogFragment extends DialogFragment {
                         }
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(android.R.string.cancel, mCancelListener)
                 .create();
     }
 }

@@ -1,10 +1,12 @@
 package com.dhavalanjaria.dyerest;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -12,12 +14,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.fragments.EditDayCardioExercisesFragment;
 import com.dhavalanjaria.dyerest.fragments.EditDayLiftingExercisesFragment;
-import com.dhavalanjaria.dyerest.viewholders.AddExerciseToDayViewHolder;
-import com.dhavalanjaria.dyerest.viewholders.ExerciseListViewHolder;
-import com.dhavalanjaria.dyerest.viewholders.ListAllExercisesViewHolder;
+import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -27,6 +28,7 @@ public abstract class ExerciseListActivity extends BaseActivity {
 
     public static final String EXTRA_WORKOUT_DAY = "ExerciseListActivity.WorkoutDay";
     protected static final String EXTRA_LIST_TYPE = "ExerciseListActivity.ListType";
+    private static final String TAG = "ExerciseListActivity";
 
     public static enum LIST_TYPE {
         ADD_TO_DAY,
@@ -80,7 +82,7 @@ public abstract class ExerciseListActivity extends BaseActivity {
             }
         };
 
-        mViewPager = findViewById(R.id.exercise_page);
+        mViewPager = findViewById(R.id.exercise_pager);
         mViewPager.setAdapter(mPagerAdapter);
         TabLayout tabLayout = findViewById(R.id.exercise_tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -89,9 +91,7 @@ public abstract class ExerciseListActivity extends BaseActivity {
         mAddExerciseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference reference = BaseActivity.getRootDataReference();
-                reference = reference.child("exercises").push().getRef();
-                Intent intent = EditExerciseActivity.newIntent(ExerciseListActivity.this);
+                Intent intent = AddNewExerciseActivity.newIntent(ExerciseListActivity.this);
                 startActivity(intent);
             }
         });

@@ -1,6 +1,9 @@
 package com.dhavalanjaria.dyerest;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -54,32 +57,34 @@ public class EditExerciseActivity extends BaseActivity {
     private Button mViewCommentButton;
     private FloatingActionButton mSaveButton;
     private ExerciseFieldAdapter mExerciseFieldAdapter;
-    private List<ExerciseField> mExerciseFieldList; // Once the save button is clicked, this will be
+    private List<String> mExerciseFieldList; // Once the save button is clicked, this will be
     // saved as well.
 
     private ExerciseFieldAdapter adapter;
     private DatabaseReference mExerciseRef;
 
     private List<ExerciseField> mModel;
+    private String mExerciseType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_exercise);
 
+        // Before we add a new exercise, launch a Dialog box to set the name so we have a reference
+        // that is not null.
         mNameEdit = findViewById(R.id.exercise_name_edit);
         mMaxSetsEdit = findViewById(R.id.max_sets_edit);
 
         mExerciseFieldRecycler = findViewById(R.id.added_fields_recycler);
         mExerciseFieldList = new ArrayList<>();
 
+        String exerciseUrl = (String) getIntent().getSerializableExtra(EXTRA_EXERCISE_ID_URL);
+        mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
+
         mExerciseFieldAdapter = new ExerciseFieldAdapter(mExerciseFieldList);
         mExerciseFieldRecycler.setAdapter(mExerciseFieldAdapter);
         mExerciseFieldRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-
-        final String exerciseUrl = (String) getIntent().getSerializableExtra(EXTRA_EXERCISE_ID_URL);
-
 
         mGuideButton = findViewById(R.id.edit_exercise_guide_button);
         mGuideButton.setOnClickListener(new View.OnClickListener() {
@@ -101,9 +106,25 @@ public class EditExerciseActivity extends BaseActivity {
         mCardioRadio = findViewById(R.id.cardio_radio);
         mLiftingRadio = findViewById(R.id.lifting_radio);
 
-        mLiftingRadio.setOnCheckedChangeListener(new CheckChangedListener());
-        mCardioRadio.setOnCheckedChangeListener(new CheckChangedListener());
-
+        mLiftingRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mMaxSetsEdit.setText("" + 1);
+                    mMaxSetsEdit.setEnabled(true);
+                    mExerciseType = "LIFTING";
+                }
+            }
+        });
+        mCardioRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mMaxSetsEdit.setEnabled(false);
+                    mExerciseType = "CARDIO";
+                }
+            }
+        });
 
         mSaveButton = findViewById(R.id.save_exercise_button);
 
@@ -118,7 +139,7 @@ public class EditExerciseActivity extends BaseActivity {
                         new OnDialogCompletedListener() {
                             @Override
                             public void onDialogComplete(String text) {
-                                mExerciseFieldList.add(new ExerciseField(text, true));
+                                mExerciseFieldList.add(text);
                                 mExerciseFieldAdapter.notifyDataSetChanged();
                             }
                         });
@@ -126,13 +147,8 @@ public class EditExerciseActivity extends BaseActivity {
             }
         });
 
-        // This is for when we're adding a new exercise
-        if (exerciseUrl != null) {
-            mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
-            setFieldsFromReference(mExerciseRef);
-        }
-        else
-            mExerciseRef = null;
+        mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
+        setFieldsFromReference(mExerciseRef);
 
     }
 
@@ -142,17 +158,13 @@ public class EditExerciseActivity extends BaseActivity {
         return intent;
     }
 
-    // If adding a new exercise altogether.
-    public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, EditExerciseActivity.class);
-        return intent;
-    }
+    // This should perhaps go in its own package. However having adapters within Activites
+    // has its own advantages.
+    public class ExerciseFieldAdapter extends RecyclerView.Adapter<ExerciseFieldViewHolder> {
 
-    private class ExerciseFieldAdapter extends RecyclerView.Adapter<ExerciseFieldViewHolder> {
+        private List<String> mExerciseFields;
 
-        private List<ExerciseField> mExerciseFields;
-
-        public ExerciseFieldAdapter(List<ExerciseField> exerciseFields) {
+        public ExerciseFieldAdapter(List<String> exerciseFields) {
             this.mExerciseFields = exerciseFields;
         }
 
@@ -164,9 +176,7 @@ public class EditExerciseActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(ExerciseFieldViewHolder holder, int position) {
-            if (mExerciseFields.get(position).getTrue()) {
-                holder.bind(mExerciseFields.get(position));
-            }
+            holder.bind(mExerciseFields.get(position));
         }
 
         @Override
@@ -183,35 +193,18 @@ public class EditExerciseActivity extends BaseActivity {
         return mExerciseRef.orderByChild("exerciseFields");
     }
 
-    private class CheckChangedListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            LinearLayout maxSetsLayout = findViewById(R.id.max_sets_layout);
-            if (isChecked && buttonView.getText().toString().equalsIgnoreCase("lifting")) {
-                maxSetsLayout.setVisibility(View.VISIBLE);
-            }
-            if (isChecked && buttonView.getText().toString().equalsIgnoreCase("cardio")){
-                maxSetsLayout.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-
     private class SaveClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
 
             final Exercise exercise = new Exercise();
 
-            // Create a new exercise if it doesn't exist.
-            if (mExerciseRef == null) {
-                String newExercise = BaseActivity.getRootDataReference().child("exercises").push().getKey();
-                mExerciseRef = BaseActivity.getRootDataReference().child("exercises").child(newExercise);
-            } else {
                 mExerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Exercise ex = dataSnapshot.getValue(Exercise.class);
                         exercise.setTotalPoints(ex.getTotalPoints());
+                        exercise.setExerciseType(ex.getExerciseType());
                         // So that we don't change the total points.
                     }
 
@@ -221,12 +214,8 @@ public class EditExerciseActivity extends BaseActivity {
                         Log.d(TAG, databaseError.getDetails());
                     }
                 });
-            }
 
             String nameText = mNameEdit.getText().toString();
-            String exerciseType = "";
-
-
 
             if (nameText.trim().length() <= 0) {
                 Toast.makeText(EditExerciseActivity.this, "The name cannot be empty", Toast.LENGTH_SHORT)
@@ -240,6 +229,7 @@ public class EditExerciseActivity extends BaseActivity {
             int maxSets = 1;
             try {
                 maxSets = Integer.parseInt(mMaxSetsEdit.getText().toString());
+                exercise.setMaxSets(maxSets);
             }
             catch (NumberFormatException ex) {
                 Toast.makeText(EditExerciseActivity.this, "Invalid characters in 'Max Sets' field",
@@ -249,24 +239,17 @@ public class EditExerciseActivity extends BaseActivity {
 
             Map<String, Object> fieldMap = new HashMap<>();
 
-            for (ExerciseField field: mExerciseFieldList) {
-                fieldMap.put(field.getName(), field.getTrue());
+            for (String field: mExerciseFieldList) {
+                fieldMap.put(field, true);
             }
 
-            // This should probably use the ToDeleteExercise Types ENUM later
-            if (mCardioRadio.isChecked()) {
-                exerciseType = "CARDIO";
-            } else if (mLiftingRadio.isChecked()) {
-                exerciseType = "LIFTING";
-                fieldMap.put("maxSets", maxSets);
-
-            } else if (mCardioRadio.isChecked() == false && mLiftingRadio.isChecked() == false) {
+            if (mCardioRadio.isChecked() == false && mLiftingRadio.isChecked() == false) {
                 Toast.makeText(EditExerciseActivity.this, "Please select exercise type", Toast.LENGTH_SHORT)
                         .show();
                 return;
             }
 
-            exercise.setExerciseType(exerciseType);
+            exercise.setExerciseType(mExerciseType);
             exercise.setExerciseFields(fieldMap);
             Map<String, Object> exerciseDetails = exercise.toMap();
 
@@ -280,34 +263,41 @@ public class EditExerciseActivity extends BaseActivity {
         if (exerciseRef == null)
             return;;
 
-            exerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Exercise exercise = dataSnapshot.getValue(Exercise.class);
+        exerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Exercise exercise = dataSnapshot.getValue(Exercise.class);
 
-                    mNameEdit.setText(exercise.getName());
+                mNameEdit.setText(exercise.getName());
 
-                    // This if really means that it should go in an AddExercise activity
-                    if (exercise.getExerciseFields() != null) {
-                        Iterator<String> fieldIter = exercise.getExerciseFields().keySet().iterator();
-                        while (fieldIter.hasNext()) {
-                            mExerciseFieldList.add(new ExerciseField(fieldIter.next(), true));
-                        }
+                // This if really means that it should go in an AddExercise activity
+                if (exercise.getExerciseFields() != null) {
+                    Iterator<String> fieldIter = exercise.getExerciseFields().keySet().iterator();
+                    while (fieldIter.hasNext()) {
+                        mExerciseFieldList.add(fieldIter.next());
                     }
+                }
 
+                if (exercise.getExerciseType() != null){
                     if (exercise.getExerciseType().equalsIgnoreCase("lifting")) {
                         mLiftingRadio.setChecked(true);
                     } else if (exercise.getExerciseType().equalsIgnoreCase("cardio")) {
                         mCardioRadio.setChecked(true);
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(TAG, databaseError.getMessage());
-                    Log.e(TAG, databaseError.getDetails());
-                }
-            });
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+        }
+
+        protected DatabaseReference getExerciseRef() {
+            String exerciseUrl = (String) getIntent().getSerializableExtra(EXTRA_EXERCISE_ID_URL);
+            return FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
         }
     }
 

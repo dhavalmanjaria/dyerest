@@ -180,6 +180,7 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         }
     }
 
+
     private void updateUI() {
         mRecyclerContainer.setAdapter(mDayAdapter);
         // mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());

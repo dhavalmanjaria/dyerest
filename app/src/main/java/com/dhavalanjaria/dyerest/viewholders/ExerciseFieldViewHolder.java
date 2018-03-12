@@ -26,10 +26,10 @@ public class ExerciseFieldViewHolder extends RecyclerView.ViewHolder implements 
 
     private TextView mExerciseFieldName;
     private ImageButton mMenuButton;
-    private List<ExerciseField> mExerciseFieldList;
+    private List<String> mExerciseFieldList;
     private RecyclerView.Adapter mAdapter;
 
-    public ExerciseFieldViewHolder(View itemView, List<ExerciseField> exerciseFields, RecyclerView.Adapter adapter) {
+    public ExerciseFieldViewHolder(View itemView, List<String> exerciseFields, RecyclerView.Adapter adapter) {
         super(itemView);
         this.mExerciseFieldList = exerciseFields;
         this.mAdapter = adapter;
@@ -40,9 +40,9 @@ public class ExerciseFieldViewHolder extends RecyclerView.ViewHolder implements 
         itemView.setOnCreateContextMenuListener(this);
     }
 
-    public void bind(final ExerciseField exerciseField) {
+    public void bind(final String exerciseField) {
 
-        mExerciseFieldName.setText(exerciseField.getName());
+        mExerciseFieldName.setText(exerciseField);
 
         mMenuButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -61,8 +61,8 @@ public class ExerciseFieldViewHolder extends RecyclerView.ViewHolder implements 
                                         new OnDialogCompletedListener() {
                                             @Override
                                             public void onDialogComplete(String text) {
-                                                exerciseField.setName(text);
                                                 mExerciseFieldName.setText(text);
+                                                mExerciseFieldList.set(getLayoutPosition(), text);
                                             }
                                         });
                                 fragment.show(manager, "ExerciseFieldVH");

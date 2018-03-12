@@ -25,8 +25,9 @@
         <activity android:name=".ExerciseGuideActivity" />
         <activity android:name=".fragments.ExerciseCommentsActivity" />
         <activity android:name=".PointsByDatePagerActivity" />
-        <activity android:name=".AddExerciseToDayActivity"/>
-        <activity android:name=".ListAllExerciseActivity"/>
+        <activity android:name=".AddExerciseToDayActivity" />
+        <activity android:name=".ListAllExerciseActivity" />
+        <activity android:name=".AddNewExerciseActivity"></activity>
     </application>
 
 </manifest>
