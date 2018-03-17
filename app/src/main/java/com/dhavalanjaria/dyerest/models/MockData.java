@@ -96,7 +96,7 @@ public class MockData {
         for(int i = 1; i < 4; i++) {
             WorkoutDay day = new WorkoutDay();
             day.setName("Day " + i);
-            day.setExercises(new HashMap<String, Object>());
+            //day.setExercises(new HashMap<String, Object>());
             retval.add(day);
         }
         return retval;

@@ -12,7 +12,6 @@ import java.util.Map;
 public class WorkoutDay {
 
     private String name;
-    private Map<String, Object> exercises;
 
     public WorkoutDay() {
         // For DataSnapshot.getValue();
@@ -22,10 +21,7 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public WorkoutDay(String name, Map<String, Object> exercises) {
-        this.name = name;
-        this.exercises = exercises;
-    }
+
 
     public String getName() {
         return name;
@@ -35,13 +31,7 @@ public class WorkoutDay {
         this.name = name;
     }
 
-    public Map<String, Object>getExercises() {
-        return exercises;
-    }
 
-    public void setExercises(Map<String, Object> exercises) {
-        this.exercises = exercises;
-    }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();

@@ -50,7 +50,8 @@ public class ActiveWorkoutActivity extends BaseActivity {
 
             @Override
             public int getCount() {
-                return mWorkoutDayModel.getExercises().size();
+                //return mWorkoutDayModel.getExercises().size();
+                return 0;
             }
         };
 

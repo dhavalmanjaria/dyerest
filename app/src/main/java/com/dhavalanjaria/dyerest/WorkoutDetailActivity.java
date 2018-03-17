@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +22,14 @@ import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutDayViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,14 +43,16 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
     public static final String EXTRA_WORKOUT_ID = "WorkoutDetailActivity.WorkoutDay";
     public static final String DIALOG_NEW_WORKOUT_DAY = "NewWorkoutDay";
     public static final String KEY_WORKOUT_ID = "WorkoutDetailActivity.mWorkoutDaysReference";
+    private static final String TAG = "WorkoutDetailActivity";
 
     private DatabaseReference mWorkoutDaysReference;
     private TextView mDayName;
     private Button mLaunchButton;
     private RecyclerView mRecyclerContainer;
-    private WorkoutDayAdapter mDayAdapter;
+    //private WorkoutDayAdapter mDayAdapter;
     private TextView mNoDayText;
     private String mWorkoutId;
+    private List<String> mDayRefList;
 
     public static Intent newIntent(Context context, String workoutId) {
         Intent intent = new Intent(context, WorkoutDetailActivity.class);
@@ -59,12 +67,15 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         setContentView(R.layout.activity_workout_detail);
 
         mWorkoutId = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_ID);
+        mDayRefList = new ArrayList<>();
 
         if (savedInstanceState != null) {
             mWorkoutId = savedInstanceState.getString(KEY_WORKOUT_ID);
         }
 
         mWorkoutDaysReference = getRootDataReference()
+                .child("workouts")
+                .child(mWorkoutId)
                 .child("days");
 
         mRecyclerContainer = (RecyclerView) findViewById(R.id.workout_detail_container);
@@ -74,8 +85,14 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
                 .setQuery(getQuery(), WorkoutDay.class)
                 .build();
 
-        mDayAdapter = new WorkoutDayAdapter(options);
-        updateUI();
+        final List<String> model = new ArrayList<>();
+
+        mWorkoutDaysReference.addChildEventListener(new WorkoutChildListener(model));
+
+        mRecyclerContainer.setAdapter(new DayRefListAdapter(model));
+        // mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());
+        mRecyclerContainer.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     public void addWorkoutDay(String workoutDayName) {
@@ -87,22 +104,23 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         childUpdates.put(newWorkoutDayKey, newDay.toMap());
         mWorkoutDaysReference.updateChildren(childUpdates);
 
-        // Update in workouts
         DatabaseReference workoutRef = BaseActivity.getRootDataReference()
                 .child("workouts")
                 .child(mWorkoutId);
         workoutRef.child("days").child(newWorkoutDayKey).setValue(true);
 
-        mDayAdapter.notifyDataSetChanged();
+        BaseActivity.getRootDataReference()
+                .child("days")
+                .child(newWorkoutDayKey)
+                .child("name")
+                .setValue(workoutDayName);
     }
 
-    @Deprecated
-    private class GetScreenshotOfDetailAdapter extends RecyclerView.Adapter<WorkoutDayViewHolder> {
+    private class DayRefListAdapter extends RecyclerView.Adapter<WorkoutDayViewHolder> {
+        private List<String> mDayRefList;
 
-        private List<WorkoutDay> mModel;
-
-        public GetScreenshotOfDetailAdapter() {
-            mModel = MockData.getWorkoutDays();
+        public DayRefListAdapter(List<String> model) {
+            mDayRefList = model;
         }
 
         @Override
@@ -115,38 +133,12 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
 
         @Override
         public void onBindViewHolder(WorkoutDayViewHolder holder, int position) {
-            holder.bind(mModel.get(position), mWorkoutDaysReference);
+            holder.bind(mDayRefList.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return mModel.size();
-        }
-    }
-
-    private class WorkoutDayAdapter extends FirebaseRecyclerAdapter<WorkoutDay, WorkoutDayViewHolder> {
-
-        /**
-         * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
-         * {@link FirebaseRecyclerOptions} for configuration options.
-         *
-         * @param options
-         */
-        public WorkoutDayAdapter(@NonNull FirebaseRecyclerOptions<WorkoutDay> options) {
-            super(options);
-        }
-
-        @Override
-        protected void onBindViewHolder(@NonNull WorkoutDayViewHolder holder, int position, @NonNull WorkoutDay model) {
-           holder.bind(model, getRef(position));
-        }
-
-        @Override
-        public WorkoutDayViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View workoutDayView = getLayoutInflater().inflate(R.layout.workout_detail_item, parent,
-                    false);
-
-            return new WorkoutDayViewHolder(workoutDayView, getLayoutInflater());
+            return mDayRefList.size();
         }
     }
 
@@ -181,28 +173,6 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
     }
 
 
-    private void updateUI() {
-        mRecyclerContainer.setAdapter(mDayAdapter);
-        // mRecyclerContainer.setAdapter(new GetScreenshotOfDetailAdapter());
-        mDayAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mDayAdapter != null) {
-            mDayAdapter.startListening();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mDayAdapter != null) {
-            mDayAdapter.stopListening();
-        }
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -212,13 +182,68 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
 
     @Override
     public Query getQuery() {
-        return mWorkoutDaysReference.orderByChild("name");
+        Query retval = BaseActivity.getRootDataReference()
+                .child("workouts")
+                .child(mWorkoutId)
+                .child("days");
+
+        retval.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnap : dataSnapshot.getChildren()) {
+                    //Log.d(TAG, (String)childSnap.getKey());
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return retval;
+
     }
-
-
 
     @Override
     public void onDialogComplete(String text) {
         addWorkoutDay(text);
     }
+
+    private class WorkoutChildListener implements ChildEventListener {
+
+        List<String> mModel;
+
+        public WorkoutChildListener(List<String> model) {
+            this.mModel = model;
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            mModel.remove(dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            return;
+        }
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            mModel.add(dataSnapshot.getKey());
+            Log.d(TAG, dataSnapshot.getKey());
+        }
+    }
+
 }

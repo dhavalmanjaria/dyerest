@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.DayExercise;
 import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
+import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -41,6 +43,7 @@ import java.util.List;
 public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mDayNameTextView;
+    public static final String TAG = "WorkoutDayViewHolder";
 
     // Notes:
     // Might want to use a Fragment for the day detail views.
@@ -65,12 +68,32 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bind(final WorkoutDay workoutDay, final DatabaseReference workoutDayRef) {
-        mDayNameTextView.setText(workoutDay.getName());
+    public void bind(final String workoutDayKey) {
 
-        GetScreenshotExerciseAdapter adapter = new GetScreenshotExerciseAdapter(workoutDay);
+        final DatabaseReference ref = BaseActivity.getRootDataReference()
+                .child("days")
+                .child(workoutDayKey);
 
-        Query query = workoutDayRef.child("exercises").orderByChild("sequenceNumber");
+        Log.d(TAG, workoutDayKey);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                WorkoutDay day = dataSnapshot.getValue(WorkoutDay.class);
+                mDayNameTextView.setText(day.getName());
+                // Other Views go here
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+                Log.d(TAG, databaseError.getDetails());
+            }
+        });
+
+        //GetScreenshotExerciseAdapter adapter = new GetScreenshotExerciseAdapter(workoutDay);
+
+        Query query = ref.child("exercises").orderByChild("sequenceNumber");
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<DayExercise>()
                 .setQuery(query, DayExercise.class)
                 .build();
@@ -111,18 +134,18 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                                 EditDialogFragment editDialogFragment = EditDialogFragment.newInstance("Edit Day", new OnDialogCompletedListener() {
                                     @Override
                                     public void onDialogComplete(String text) {
-                                        workoutDayRef.child("name").setValue(text);
+                                        ref.child("name").setValue(text);
                                     }
                                 });
                                 editDialogFragment.show(manager, "WorkoutDayViewHolder");
                                 return true;
                             case R.id.edit_workout_day_sequence_item:
-                                intent = EditDaySequenceActivity.newIntent(itemView.getContext(), workoutDayRef.toString());
+                                intent = EditDaySequenceActivity.newIntent(itemView.getContext(), ref.toString());
                                 itemView.getContext().startActivity(intent);
                                 return true;
                             case R.id.edit_workout_day_exercises_item:
                                 intent = AddExerciseToDayActivity.newIntent(itemView.getContext(),
-                                        workoutDayRef);
+                                        ref);
                                 itemView.getContext().startActivity(intent);
                                 return true;
                             default:
@@ -132,11 +155,8 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
                 menu.show();
-
             }
         });
-
-        adapter.notifyDataSetChanged();
     }
 
     private class DayExercisePreviewViewHolder extends RecyclerView.ViewHolder {
@@ -167,6 +187,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String name = (String) dataSnapshot.getValue();
                     mExerciseName.setText(name);
+                    // Other Exercise Views here.
                 }
 
                 @Override
