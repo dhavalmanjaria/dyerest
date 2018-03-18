@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.Exercise;
-import com.dhavalanjaria.dyerest.models.ExerciseMap;
 
 /**
  * Created by Dhaval Anjaria on 2/15/2018.

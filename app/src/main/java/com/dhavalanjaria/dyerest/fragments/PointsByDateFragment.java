@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.DayPerformed;
-import com.dhavalanjaria.dyerest.models.ExercisePerformed;
+import com.dhavalanjaria.dyerest.models.ToDeleteExercisePerformed;
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.viewholders.ExercisePerformedViewHolder;
 
@@ -52,7 +52,7 @@ public class PointsByDateFragment extends Fragment {
 
     private class GetScreenshotAdapter extends RecyclerView.Adapter<ExercisePerformedViewHolder> {
 
-        private List<ExercisePerformed> mModel;
+        private List<ToDeleteExercisePerformed> mModel;
 
         public GetScreenshotAdapter() {
             mModel = MockData.getExercisesPerformed();

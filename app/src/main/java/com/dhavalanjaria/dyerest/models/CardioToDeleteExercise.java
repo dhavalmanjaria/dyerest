@@ -12,27 +12,27 @@ import java.util.ArrayList;
 @Deprecated
 public class CardioToDeleteExercise extends ToDeleteExercise {
 
-    private ArrayList<ExerciseMap> mExerciseMaps;
+    private ArrayList<ActiveExerciseField> mActiveExerciseFields;
 
     public CardioToDeleteExercise() {
-        mExerciseMaps = new ArrayList<>();
-        mExerciseMaps.add(new ExerciseMap("duration", 0));
-        mExerciseMaps.add(new ExerciseMap("distance", 0));
-        mExerciseMaps.add(new ExerciseMap("intensity", 0));
-        mExerciseMaps.add(new ExerciseMap("incline", 0));
+        mActiveExerciseFields = new ArrayList<>();
+        mActiveExerciseFields.add(new ActiveExerciseField("duration", 0));
+        mActiveExerciseFields.add(new ActiveExerciseField("distance", 0));
+        mActiveExerciseFields.add(new ActiveExerciseField("intensity", 0));
+        mActiveExerciseFields.add(new ActiveExerciseField("incline", 0));
     }
 
     @Override
     public String toString() {
         StringBuffer retVal = new StringBuffer();
-        for (ExerciseMap exerciseMap: mExerciseMaps) {
-            retVal.append(exerciseMap.getFieldName() + ": " + exerciseMap.getValue());
+        for (ActiveExerciseField activeExerciseField : mActiveExerciseFields) {
+            retVal.append(activeExerciseField.getFieldName() + ": " + activeExerciseField.getValue());
         }
         return retVal.toString();
     }
 
-    public ArrayList<ExerciseMap> getExerciseMaps() {
-        return mExerciseMaps;
+    public ArrayList<ActiveExerciseField> getActiveExerciseFields() {
+        return mActiveExerciseFields;
     }
 
     // No setter because this is temporary and should not be used to write data.

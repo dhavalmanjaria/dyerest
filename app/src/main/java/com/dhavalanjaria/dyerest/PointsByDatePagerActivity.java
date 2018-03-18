@@ -5,17 +5,14 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.fragments.PointsByDateFragment;
-import com.dhavalanjaria.dyerest.models.ExercisePerformed;
+import com.dhavalanjaria.dyerest.models.ToDeleteExercisePerformed;
 import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.viewholders.ExercisePerformedViewHolder;
 import com.google.firebase.database.Query;
@@ -59,7 +56,7 @@ public class PointsByDatePagerActivity extends BaseActivity {
         public GetScreenshotPagerAdapter(FragmentManager fm) {
             super(fm);
 
-            for (ExercisePerformed ep: MockData.getExercisesPerformed()) {
+            for (ToDeleteExercisePerformed ep: MockData.getExercisesPerformed()) {
                 mFragmentList.add(PointsByDateFragment.newInstance());
             }
         }
@@ -82,7 +79,7 @@ public class PointsByDatePagerActivity extends BaseActivity {
 
     private class GetScreenshotAdapter extends RecyclerView.Adapter<ExercisePerformedViewHolder> {
 
-        private List<ExercisePerformed> mModel;
+        private List<ToDeleteExercisePerformed> mModel;
 
         public GetScreenshotAdapter() {
             mModel = MockData.getExercisesPerformed();

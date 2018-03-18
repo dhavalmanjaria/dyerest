@@ -112,7 +112,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 // getAdapterPosition should technically work.
                 // However, expect errors
                 // Replace with String workoutKey
-                Intent intent = ActiveWorkoutActivity.newIntent(v.getContext(), 0);
+                Intent intent = ActiveWorkoutActivity.newIntent(v.getContext(), ref.toString());
                 v.getContext().startActivity(intent);
             }
         });
@@ -203,8 +203,8 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 //            StringBuffer targetText = new StringBuffer();
 //
 //            // Should be getLastExerciseMap or something
-////            List<ExerciseMap> targets = exercise.getExerciseMaps();
-////            for (ExerciseMap t: targets) {
+////            List<ActiveExerciseField> targets = exercise.getActiveExerciseFields();
+////            for (ActiveExerciseField t: targets) {
 ////                targetText.append(t.getValue() + " ");
 ////            }
 //

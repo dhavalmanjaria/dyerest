@@ -13,26 +13,26 @@ import java.util.LinkedList;
 @Deprecated
 public class LiftingToDeleteExercise extends ToDeleteExercise {
 
-    private LinkedList<ExerciseMap> mExerciseMap;
+    private LinkedList<ActiveExerciseField> mActiveExerciseField;
 
     public LiftingToDeleteExercise() {
-        mExerciseMap = new LinkedList<>();
+        mActiveExerciseField = new LinkedList<>();
 
-        mExerciseMap.add(new ExerciseMap("poundage", 0));
-        mExerciseMap.add(new ExerciseMap("poundage", 0));
-        mExerciseMap.add(new ExerciseMap("poundage", 0));
+        mActiveExerciseField.add(new ActiveExerciseField("poundage", 0));
+        mActiveExerciseField.add(new ActiveExerciseField("poundage", 0));
+        mActiveExerciseField.add(new ActiveExerciseField("poundage", 0));
     }
 
     @Override
-    public LinkedList<ExerciseMap> getExerciseMaps() {
-        return mExerciseMap;
+    public LinkedList<ActiveExerciseField> getActiveExerciseFields() {
+        return mActiveExerciseField;
     }
 
     @Override
     public String toString() {
         StringBuffer retVal = new StringBuffer();
-        for (ExerciseMap exerciseMap: mExerciseMaps) {
-            retVal.append(exerciseMap.getFieldName() + ": " + exerciseMap.getValue());
+        for (ActiveExerciseField activeExerciseField : mActiveExerciseFields) {
+            retVal.append(activeExerciseField.getFieldName() + ": " + activeExerciseField.getValue());
         }
         return retVal.toString();
     }

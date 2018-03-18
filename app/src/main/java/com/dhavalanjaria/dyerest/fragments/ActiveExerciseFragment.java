@@ -1,0 +1,155 @@
+package com.dhavalanjaria.dyerest.fragments;
+
+import android.media.MediaExtractor;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.dhavalanjaria.dyerest.R;
+import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
+import com.dhavalanjaria.dyerest.models.Exercise;
+import com.dhavalanjaria.dyerest.viewholders.ExerciseDetailViewHolder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Dhaval Anjaria on 2/15/2018.
+ */
+
+public class ActiveExerciseFragment extends Fragment {
+
+    public static final String TAG = "AWExerciseFragment";
+    private static final String KEY_EXERCISE_URL = TAG + ".ExerciseUrl";
+    private static final String KEY_SET_NO = TAG + ".SetNo";
+    private static final String KEY_PREVIOUS_DATE = TAG + ".PreviousDate";
+    protected static Exercise mExercise;
+    private RecyclerView mExerciseRecycler;
+    private TextView mExerciseNameText;
+    private DatabaseReference mExerciseRef;
+
+    // The exercise position should really be retrieved from the actual model
+    public static ActiveExerciseFragment newInstance(String exerciseRefUrl, int setNo, String previousDate) {
+
+        Bundle args = new Bundle();
+        ActiveExerciseFragment fragment = new ActiveExerciseFragment();
+        args.putString(KEY_EXERCISE_URL, exerciseRefUrl);
+        args.putInt(KEY_SET_NO, setNo);
+        args.putString(KEY_PREVIOUS_DATE, previousDate);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        View v = inflater.inflate(R.layout.fragment_active_exercise, container, false);
+
+        String exerciseUrl = (String) getArguments().get(KEY_EXERCISE_URL);
+        final int setNo = (int)getArguments().getInt(KEY_SET_NO);
+
+        mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
+
+        if (mExerciseRef == null)
+            return null;
+
+        mExerciseNameText = v.findViewById(R.id.exercise_name_card_text);
+
+        mExerciseNameText = v.findViewById(R.id.exercise_name_card_text);
+
+        mExerciseRecycler = (RecyclerView) v.findViewById(R.id.active_exercise_detail_recycler);
+
+
+        // This is more code to deal with the Asynchrocity of Firebase
+        final List<ActiveExerciseField> adapterModel = new ArrayList<>();
+        final ActiveExerciseFieldAdapter adapter = new ActiveExerciseFieldAdapter(adapterModel);
+
+        mExerciseRecycler.setAdapter(adapter);
+        mExerciseRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mExercise = new Exercise();
+        mExerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Exercise ex = dataSnapshot.getValue(Exercise.class);
+                mExercise.setName(ex.getName());
+                mExercise.setMaxSets(ex.getMaxSets());
+                mExercise.setExerciseType(ex.getExerciseType());
+                mExercise.setExerciseFields(ex.getExerciseFields());
+
+                mExerciseNameText.setText(mExercise.getName());
+                // Other Views also go here.
+
+                adapterModel.addAll(generateFieldValues(mExercise, setNo));
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+                Log.d(TAG, databaseError.getDetails());
+            }
+        });
+
+        return v;
+    }
+
+    private List<ActiveExerciseField> generateFieldValues(Exercise exercise, int setNo) {
+        List<ActiveExerciseField> retval = new ArrayList<>();
+
+        // First add the set number
+        retval.add(new ActiveExerciseField("Set", setNo));
+
+        for (String key: exercise.getExerciseFields().keySet()) {
+            ActiveExerciseField field = new ActiveExerciseField();
+            field.setFieldName(key);
+            // Value should be whatever value was for the last date.
+            field.setValue(0);
+            retval.add(field);
+        }
+        return retval;
+    }
+
+    private class ActiveExerciseFieldAdapter extends RecyclerView.Adapter<ExerciseDetailViewHolder> {
+
+        private List<ActiveExerciseField> mExerciseFieldsList;
+
+        public ActiveExerciseFieldAdapter(List<ActiveExerciseField> activeExerciseFields) {
+            this.mExerciseFieldsList = activeExerciseFields;
+        }
+
+        @Override
+        public ExerciseDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = getLayoutInflater();
+            View itemView = inflater.inflate(R.layout.active_exercise_detail_item, parent, false);
+
+            return new ExerciseDetailViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ExerciseDetailViewHolder holder, int position) {
+            ActiveExerciseField activeExerciseField = mExerciseFieldsList.get(position);
+            holder.bind(activeExerciseField.getFieldName(), activeExerciseField.getValue());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mExerciseFieldsList.size();
+        }
+    }
+}

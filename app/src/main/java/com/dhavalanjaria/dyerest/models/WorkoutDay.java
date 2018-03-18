@@ -31,8 +31,6 @@ public class WorkoutDay {
         this.name = name;
     }
 
-
-
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("name", getName());

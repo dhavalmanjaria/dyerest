@@ -1,50 +1,40 @@
 package com.dhavalanjaria.dyerest.models;
 
-import java.util.Date;
-
 /**
- * Created by Dhaval Anjaria on 2/26/2018.
+ * Created by Dhaval Anjaria on 3/17/2018.
  */
 
 public class ExercisePerformed {
+    private int sequenceNo;
+    private int setNo;
+    private int points;
+    // There will also be a map called "values" or something
 
-    public Date datePerformed;
-    public String exerciseKey;
-    public String dayKey; // Day Key may not be needed
-    public int points;
 
     public ExercisePerformed() {
+        // DataSnapshot
     }
 
-    public ExercisePerformed(Date datePerformed, String exerciseKey, String dayKey, int points) {
-        this.datePerformed = datePerformed;
-        this.exerciseKey = exerciseKey;
-        this.dayKey = dayKey;
+    public ExercisePerformed(int sequenceNo, int setNo, int points) {
+        this.sequenceNo = sequenceNo;
+        this.setNo = setNo;
         this.points = points;
     }
 
-    public Date getDatePerformed() {
-        return datePerformed;
+    public int getSequenceNo() {
+        return sequenceNo;
     }
 
-    public void setDatePerformed(Date datePerformed) {
-        this.datePerformed = datePerformed;
+    public void setSequenceNo(int sequenceNo) {
+        this.sequenceNo = sequenceNo;
     }
 
-    public String getExerciseKey() {
-        return exerciseKey;
+    public int getSetNo() {
+        return setNo;
     }
 
-    public void setExerciseKey(String exerciseKey) {
-        this.exerciseKey = exerciseKey;
-    }
-
-    public String getDayKey() {
-        return dayKey;
-    }
-
-    public void setDayKey(String dayKey) {
-        this.dayKey = dayKey;
+    public void setSetNo(int setNo) {
+        this.setNo = setNo;
     }
 
     public int getPoints() {

@@ -14,15 +14,15 @@ public class ToDeleteExercise {
     public String name;
     public int points;
 
-    public List<ExerciseMap> mExerciseMaps;
+    public List<ActiveExerciseField> mActiveExerciseFields;
 
     // Here we see the covariance-contravariance thing
-    public List<ExerciseMap> getExerciseMaps() {
-        return mExerciseMaps;
+    public List<ActiveExerciseField> getActiveExerciseFields() {
+        return mActiveExerciseFields;
     }
 
-    protected void setExerciseMaps(List<ExerciseMap> exerciseMaps) {
-        this.mExerciseMaps = exerciseMaps;
+    protected void setActiveExerciseFields(List<ActiveExerciseField> activeExerciseFields) {
+        this.mActiveExerciseFields = activeExerciseFields;
     }
 
     @Nullable

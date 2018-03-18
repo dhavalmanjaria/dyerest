@@ -3,7 +3,6 @@ package com.dhavalanjaria.dyerest.models;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,9 +27,9 @@ public class MockData {
     public static LinkedList<ToDeleteExercise> getLiftingExercises() {
         LinkedList<ToDeleteExercise> retVal = new LinkedList<>();
 
-        LinkedList<ExerciseMap> map = new LinkedList<>();
-        map.add(new ExerciseMap("Max Sets", 2));
-        map.add(new ExerciseMap("Poundage", 15));
+        LinkedList<ActiveExerciseField> map = new LinkedList<>();
+        map.add(new ActiveExerciseField("Max Sets", 2));
+        map.add(new ActiveExerciseField("Poundage", 15));
 
         ToDeleteExercise squats = new ToDeleteExercise("Squats");
         squats.setPoundage(20);
@@ -46,7 +45,7 @@ public class MockData {
         retVal.add(lunges);
 
         for (ToDeleteExercise e: retVal) {
-            e.setExerciseMaps(map);
+            e.setActiveExerciseFields(map);
         }
 
         return retVal;
@@ -55,10 +54,10 @@ public class MockData {
     public static List<ToDeleteExercise> getCardioExercises() {
         List<ToDeleteExercise> retVal = new ArrayList<>();
 
-        LinkedList<ExerciseMap> map = new LinkedList<>();
-        map.add(new ExerciseMap("Duration", 15));
-        map.add(new ExerciseMap("Distance", 150));
-        map.add(new ExerciseMap("Intensity", 3));
+        LinkedList<ActiveExerciseField> map = new LinkedList<>();
+        map.add(new ActiveExerciseField("Duration", 15));
+        map.add(new ActiveExerciseField("Distance", 150));
+        map.add(new ActiveExerciseField("Intensity", 3));
 
         ToDeleteExercise treadmill = new ToDeleteExercise("Treadmill");
         treadmill.setIntensity(6);
@@ -77,7 +76,7 @@ public class MockData {
         retVal.add(elliptical);
 
         for (ToDeleteExercise e: retVal) {
-            e.setExerciseMaps(map);
+            e.setActiveExerciseFields(map);
         }
 
         return retVal;
@@ -134,7 +133,6 @@ public class MockData {
             cal.add(Calendar.DATE, i--);
             dayPerformed.setDatePerformed(cal.getTime());
             dayPerformed.setPoints(200);
-            dayPerformed.setExerciseKey(e.getName());
             dayPerformed.setDayKey(day.getName());
 
             retval.add(dayPerformed);
@@ -151,20 +149,20 @@ public class MockData {
         return retVal;
     }
 
-    public static List<ExercisePerformed> getExercisesPerformed() {
+    public static List<ToDeleteExercisePerformed> getExercisesPerformed() {
         List<ToDeleteExercise> toDeleteExercises = getRandomExercises();
 
         WorkoutDay day = getWorkoutDays().get(0);
 
-        ArrayList<ExercisePerformed> retval = new ArrayList<ExercisePerformed>();
+        ArrayList<ToDeleteExercisePerformed> retval = new ArrayList<ToDeleteExercisePerformed>();
         for (ToDeleteExercise e: toDeleteExercises) {
-            ExercisePerformed exercisePerformed = new ExercisePerformed();
-            exercisePerformed.setDatePerformed(new Date());
-            exercisePerformed.setPoints(20);
-            exercisePerformed.setExerciseKey(e.getName());
-            exercisePerformed.setDayKey(day.getName());
+            ToDeleteExercisePerformed toDeleteExercisePerformed = new ToDeleteExercisePerformed();
+            toDeleteExercisePerformed.setDatePerformed(new Date());
+            toDeleteExercisePerformed.setPoints(20);
+            toDeleteExercisePerformed.setExerciseKey(e.getName());
+            toDeleteExercisePerformed.setDayKey(day.getName());
 
-            retval.add(exercisePerformed);
+            retval.add(toDeleteExercisePerformed);
         }
         return retval;
     }

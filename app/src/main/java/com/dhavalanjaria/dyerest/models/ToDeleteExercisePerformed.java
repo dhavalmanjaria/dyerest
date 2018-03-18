@@ -1,24 +1,25 @@
 package com.dhavalanjaria.dyerest.models;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/26/2018.
  */
 
-//  Class used for Points History. Name could be worked on.
-public class DayPerformed {
+@Deprecated
+public class ToDeleteExercisePerformed {
+
     public Date datePerformed;
-    public String dayKey;
+    public String exerciseKey;
+    public String dayKey; // Day Key may not be needed
     public int points;
 
-    public DayPerformed() {
+    public ToDeleteExercisePerformed() {
     }
 
-    public DayPerformed(Date datePerformed, String dayKey, int points) {
+    public ToDeleteExercisePerformed(Date datePerformed, String exerciseKey, String dayKey, int points) {
         this.datePerformed = datePerformed;
+        this.exerciseKey = exerciseKey;
         this.dayKey = dayKey;
         this.points = points;
     }
@@ -29,6 +30,14 @@ public class DayPerformed {
 
     public void setDatePerformed(Date datePerformed) {
         this.datePerformed = datePerformed;
+    }
+
+    public String getExerciseKey() {
+        return exerciseKey;
+    }
+
+    public void setExerciseKey(String exerciseKey) {
+        this.exerciseKey = exerciseKey;
     }
 
     public String getDayKey() {
@@ -45,14 +54,5 @@ public class DayPerformed {
 
     public void setPoints(int points) {
         this.points = points;
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> retval = new HashMap<>();
-        retval.put("datePerformed", getDatePerformed());
-        retval.put("dayKey", getDayKey());
-        retval.put("points", getPoints());
-
-        return retval;
     }
 }
