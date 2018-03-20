@@ -144,46 +144,6 @@ public class ActiveExerciseFragment extends Fragment {
             field.setFieldName(key);
             field.setValue(0);
             retval.add(field);
-
-            
-            dayPerformedReference.orderByKey().limitToLast(2).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    DataSnapshot lastDateSnapshot = null;
-                    if (dataSnapshot.getChildren().iterator().next() != null) {
-                        lastDateSnapshot = dataSnapshot.getChildren().iterator().next();
-                    } else {
-                        lastDateSnapshot = dataSnapshot;
-                    }
-
-                    for (DataSnapshot exercisePerfSnap: lastDateSnapshot.getChildren()) {
-                        String exerciseKey = (String) exercisePerfSnap.child("exerciseKey").getValue();
-
-                        if (exerciseKey.equalsIgnoreCase(mExerciseRef.getKey())){
-                            Log.d(TAG, exercisePerfSnap.toString());
-                            Log.d(TAG, exercisePerfSnap
-                                    .child("values")
-                                    .child(field.getFieldName())
-                                    .toString());
-                            int val = exercisePerfSnap.child("values").child(field.getFieldName())
-                                    .getValue(Integer.class);
-
-                            field.setValue(val);
-                        }
-                    }
-                    Log.d(TAG, dataSnapshot.getKey());
-                    // Putting it here so the data changes once the operation above done.
-                    retval.add(field);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.d(TAG, databaseError.getMessage());
-                    Log.d(TAG, databaseError.getDetails());
-                }
-            });
-
-
         }
 
         return retval;
