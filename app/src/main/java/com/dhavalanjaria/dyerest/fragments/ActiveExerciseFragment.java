@@ -47,27 +47,16 @@ public class ActiveExerciseFragment extends Fragment {
 
     private DatabaseReference mExerciseRef;
     private DatabaseReference mDayPerformedReference;
-    private DatabaseReference mExerciseTimestampReference;
+    private DatabaseReference mExercisePerformedReference;
 
     private List<Integer> mNewValuesList; // Used for points calculation
 
-    // The exercise position should really be retrieved from the actual model
-    public static ActiveExerciseFragment newInstance(String exerciseRefUrl, int setNo, String dayRefUrl) {
-
-        Bundle args = new Bundle();
-        ActiveExerciseFragment fragment = new ActiveExerciseFragment();
-        args.putString(KEY_EXERCISE_URL, exerciseRefUrl);
-        args.putInt(KEY_SET_NO, setNo);
-        args.putString(KEY_DAY_URL, dayRefUrl);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static ActiveExerciseFragment newInstance(String exerciseToPerformUrl, String exerciseUrl) {
+    public static ActiveExerciseFragment newInstance(String exerciseToPerformUrl, String exerciseUrl, int setNo) {
         Bundle args = new Bundle();
         ActiveExerciseFragment fragment = new ActiveExerciseFragment();
         args.putString(KEY_EXERCISE_PERFORMED_URL, exerciseToPerformUrl);
         args.putString(KEY_EXERCISE_URL, exerciseUrl);
+        args.putInt(KEY_SET_NO, setNo);
         /**
          * This is a new instance method that will deliver the newly formed ExercisePerformed key
          * to the Fields ViewHolder which will then add the new values accordingly.
@@ -85,12 +74,12 @@ public class ActiveExerciseFragment extends Fragment {
         final int setNo = (int)getArguments().getInt(KEY_SET_NO);
 
         String exercisePerformedUrl = (String) getArguments().get(KEY_EXERCISE_PERFORMED_URL);
-        mExerciseTimestampReference = FirebaseDatabase.getInstance().getReferenceFromUrl(exercisePerformedUrl);
+        mExercisePerformedReference = FirebaseDatabase.getInstance().getReferenceFromUrl(exercisePerformedUrl);
 
         String exerciseUrl = (String) getArguments().get(KEY_EXERCISE_URL);
         mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
 
-        mDayPerformedReference = mExerciseTimestampReference.getParent();
+        mDayPerformedReference = mExercisePerformedReference.getParent().getParent();
 
         if (mExerciseRef == null || mDayPerformedReference == null)
             return null;
@@ -119,10 +108,10 @@ public class ActiveExerciseFragment extends Fragment {
                 mExerciseNameText.setText(mExercise.getName());
                 // Other Views also go here.
 
-                adapterModel.addAll(generateFieldValues(mExercise, setNo));
+                adapterModel.addAll(generateFieldValues(mExercise, setNo, mDayPerformedReference));
                 adapter.notifyDataSetChanged();
+                createExerciseFields(mExercisePerformedReference, mExercise);
 
-                createExerciseFields(mExerciseTimestampReference, mExercise);
             }
 
             @Override
@@ -143,20 +132,60 @@ public class ActiveExerciseFragment extends Fragment {
         return v;
     }
 
-    private List<ActiveExerciseField> generateFieldValues(Exercise exercise, int setNo) {
-        List<ActiveExerciseField> retval = new ArrayList<>();
+    private List<ActiveExerciseField> generateFieldValues(final Exercise exercise, int setNo,
+                                                          DatabaseReference dayPerformedReference) {
+        final List<ActiveExerciseField> retval = new ArrayList<>();
 
         // First add the set number
         retval.add(new ActiveExerciseField("Set", setNo));
 
         for (String key: exercise.getExerciseFields().keySet()) {
-            ActiveExerciseField field = new ActiveExerciseField();
+            final ActiveExerciseField field = new ActiveExerciseField();
             field.setFieldName(key);
-
-            // Initially it is set to 0.
             field.setValue(0);
             retval.add(field);
+
+            
+            dayPerformedReference.orderByKey().limitToLast(2).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    DataSnapshot lastDateSnapshot = null;
+                    if (dataSnapshot.getChildren().iterator().next() != null) {
+                        lastDateSnapshot = dataSnapshot.getChildren().iterator().next();
+                    } else {
+                        lastDateSnapshot = dataSnapshot;
+                    }
+
+                    for (DataSnapshot exercisePerfSnap: lastDateSnapshot.getChildren()) {
+                        String exerciseKey = (String) exercisePerfSnap.child("exerciseKey").getValue();
+
+                        if (exerciseKey.equalsIgnoreCase(mExerciseRef.getKey())){
+                            Log.d(TAG, exercisePerfSnap.toString());
+                            Log.d(TAG, exercisePerfSnap
+                                    .child("values")
+                                    .child(field.getFieldName())
+                                    .toString());
+                            int val = exercisePerfSnap.child("values").child(field.getFieldName())
+                                    .getValue(Integer.class);
+
+                            field.setValue(val);
+                        }
+                    }
+                    Log.d(TAG, dataSnapshot.getKey());
+                    // Putting it here so the data changes once the operation above done.
+                    retval.add(field);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, databaseError.getMessage());
+                    Log.d(TAG, databaseError.getDetails());
+                }
+            });
+
+
         }
+
         return retval;
     }
 
@@ -180,25 +209,7 @@ public class ActiveExerciseFragment extends Fragment {
         public void onBindViewHolder(final ExerciseDetailViewHolder holder, int position) {
             final ActiveExerciseField activeExerciseField = mExerciseFieldsList.get(position);
 
-            // First we need to get the targets, i.e. the values for when the last time the exercise
-            // was performed.
-            mDayPerformedReference.orderByKey().limitToLast(2)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            DataSnapshot lastDateSnapshot = dataSnapshot.getChildren().iterator().next();
-                            Log.d(TAG, dataSnapshot.getKey());
-                            // It is important to note that this method will be a deferred action
-                            // meaning that it won't execute immediately, which is fine.
-                            holder.bind(activeExerciseField.getFieldName(), activeExerciseField.getValue(),
-                                    lastDateSnapshot.getRef());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+            holder.bind(activeExerciseField);
         }
 
         @Override

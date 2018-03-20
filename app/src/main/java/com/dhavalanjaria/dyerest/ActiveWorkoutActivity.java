@@ -49,11 +49,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
         String workoutDayUrl = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_DAY_REF_URL);
         mDayReference = FirebaseDatabase.getInstance().getReferenceFromUrl(workoutDayUrl);
 
-        // Create a new Active Workout
-//        DatabaseReference daysPerformedRef = getRootDataReference().child("daysPerformed").push();
-//        DayPerformed dayPerformed = new DayPerformed(new Date(), mDayReference.getKey(), 0);
-//        daysPerformedRef.updateChildren(dayPerformed.toMap());
-
         long currentUnixTime = System.currentTimeMillis();
 
         // Temporary value so that a reference exists and we don't have to deal with "if (null)" type
@@ -217,7 +212,8 @@ public class ActiveWorkoutActivity extends BaseActivity {
             PagerAdapterModel currentModel = mModel.get(position);
             // Exercise Url passed to Fragment so that we don't have to retrieve it again.
             return ActiveExerciseFragment.newInstance(currentModel.getExerciseToPerformUrl(),
-                    currentModel.getExerciseUrl());
+                    currentModel.getExerciseUrl(),
+                    currentModel.getSetNo());
         }
 
         @Override

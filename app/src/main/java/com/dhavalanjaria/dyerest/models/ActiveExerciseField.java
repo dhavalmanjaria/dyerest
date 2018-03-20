@@ -44,7 +44,6 @@ public class ActiveExerciseField {
         return map;
     }
 
-
     @Override
     public String toString() {
         return getFieldName() + ": " + getValue();
