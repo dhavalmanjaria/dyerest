@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
 import com.dhavalanjaria.dyerest.models.Exercise;
+import com.dhavalanjaria.dyerest.models.ExerciseField;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseDetailViewHolder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +50,7 @@ public class ActiveExerciseFragment extends Fragment {
     private DatabaseReference mDayPerformedReference;
     private DatabaseReference mExercisePerformedReference;
 
-    private List<Integer> mNewValuesList; // Used for points calculation
+    private List<ActiveExerciseField> mNewValuesList; // Used for points calculation
 
     public static ActiveExerciseFragment newInstance(String exerciseToPerformUrl, String exerciseUrl, int setNo) {
         Bundle args = new Bundle();
@@ -125,7 +126,21 @@ public class ActiveExerciseFragment extends Fragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Save whatever..
+                // The fields list will be updated from the ViewHolder
+                mNewValuesList = adapter.getExerciseFieldsList();
+                Log.d(TAG, mNewValuesList.toString());
+
+                Map<String, Object> map = new HashMap<>();
+                for (ActiveExerciseField field: mNewValuesList) {
+                    map.put(field.getFieldName(), field.getValue());
+                }
+
+                // Set was added for the ViewHolder. Here we need to remove it.
+                map.remove("Set");
+
+                mExercisePerformedReference.child("values")
+                        .updateChildren(map);
+
             }
         });
 
@@ -162,7 +177,7 @@ public class ActiveExerciseFragment extends Fragment {
             LayoutInflater inflater = getLayoutInflater();
             View itemView = inflater.inflate(R.layout.active_exercise_detail_item, parent, false);
 
-            return new ExerciseDetailViewHolder(itemView);
+            return new ExerciseDetailViewHolder(itemView, mExerciseFieldsList);
         }
 
         @Override
@@ -176,6 +191,14 @@ public class ActiveExerciseFragment extends Fragment {
         public int getItemCount() {
             return mExerciseFieldsList.size();
         }
+
+        public List<ActiveExerciseField> getExerciseFieldsList() {
+            return mExerciseFieldsList;
+        }
+
+        public void setExerciseFieldsList(List<ActiveExerciseField> exerciseFieldsList) {
+            mExerciseFieldsList = exerciseFieldsList;
+        }
     }
 
     private void createExerciseFields(DatabaseReference exercisePerformedReference, Exercise exercise) {
@@ -188,5 +211,10 @@ public class ActiveExerciseFragment extends Fragment {
 
         exercisePerformedReference.child("values")
                 .updateChildren(exerciseFields);
+    }
+
+    public void setExerciseFieldValues(List<ActiveExerciseField> newValues) {
+        mNewValuesList = newValues;
+        return ;
     }
 }
