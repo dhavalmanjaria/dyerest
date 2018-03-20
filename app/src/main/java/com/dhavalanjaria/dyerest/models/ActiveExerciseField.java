@@ -38,6 +38,7 @@ public class ActiveExerciseField {
     }
 
     public Map<String, Object> toMap() {
+
         Map<String, Object> map = new HashMap<>();
         map.put(getFieldName(), getValue());
         return map;

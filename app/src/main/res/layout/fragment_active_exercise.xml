@@ -40,7 +40,7 @@
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/save_button"
+        android:id="@+id/save_exercise_data_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/active_exercise_detail_recycler"
