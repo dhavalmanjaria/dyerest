@@ -44,4 +44,5 @@
     <string name="edit_exercises">Edit Exercises</string>
     <string name="new_day_name">New Day Name</string>
     <string name="view_history">View History</string>
+    <string name="end_workout">Finish Workout?</string>
 </resources>

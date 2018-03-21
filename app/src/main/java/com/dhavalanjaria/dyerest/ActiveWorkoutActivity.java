@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.dhavalanjaria.dyerest.fragments.ActiveExerciseFragment;
+import com.dhavalanjaria.dyerest.fragments.ActiveWorkoutCompletedFragment;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +34,7 @@ public class ActiveWorkoutActivity extends BaseActivity {
     private ViewPager mActiveExerciseViewPager;
     private FragmentStatePagerAdapter mStatePagerAdapter;
     private DatabaseReference mDayReference;
+    private static long mCurrentUnixTime;
 
     public static Intent newIntent(Context context, String workoutDayRefUrl) {
         Intent intent = new Intent(context, ActiveWorkoutActivity.class);
@@ -49,31 +51,42 @@ public class ActiveWorkoutActivity extends BaseActivity {
         String workoutDayUrl = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_DAY_REF_URL);
         mDayReference = FirebaseDatabase.getInstance().getReferenceFromUrl(workoutDayUrl);
 
-        long currentUnixTime = System.currentTimeMillis();
-
-        // Temporary value so that a reference exists and we don't have to deal with "if (null)" type
-        // statements. This makes sense because launching a workout should create a node anyway.
-        getRootDataReference().child("daysPerformed")
-                .child(mDayReference.getKey())
-                .child("" + currentUnixTime)
-                .setValue(0);
-
-        final DatabaseReference exerciseTimestampRef = getRootDataReference().child("daysPerformed")
-                .child(mDayReference.getKey())
-                .child("" + currentUnixTime);
-
-
-        //TODO: Once this is done, the ViewHolder or the Adapter should create nodes for each
-        // exercise that is to be performed. The workout data (the poundage, reps, etc.) for the
-        // exercise should be filled in when the user saves.
+        mActiveExerciseViewPager = findViewById(R.id.active_exercise_pager);
 
         // Create a List<> of exercises to be performed.
         final List<PagerAdapterModel> fragmentModelList = new ArrayList<>();
+        final ExercisePagerAdapter adapterTempVar = new ExercisePagerAdapter(getSupportFragmentManager(), fragmentModelList);
+
+        mCurrentUnixTime = System.currentTimeMillis();
+
+        // This helps us find the last exercise in the sequence. So that we can tell when all
+        // the exercises have been fetched.
+        String lastExerciseKey = null;
+
+        final String[] tmpKey = {null};
+        mDayReference.child("exercises").orderByChild("sequenceNumber").limitToLast(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // First child, which is the only child
+                        String key = dataSnapshot.getChildren().iterator().next().getRef().getKey();
+                        tmpKey[0] = key;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        lastExerciseKey = tmpKey[0];
+
+
         mDayReference.child("exercises").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mStatePagerAdapter = new ExercisePagerAdapter(getSupportFragmentManager(), fragmentModelList);
+                int dayExerciseCount = 0;
                 for (DataSnapshot exerciseSnap: dataSnapshot.getChildren()) {
 
                     Log.d(TAG, exerciseSnap.getRef().getKey());
@@ -104,18 +117,31 @@ public class ActiveWorkoutActivity extends BaseActivity {
                                 data.setSetNo(setNo);
                                 data.setSequenceNo(sequenceNo[0]);
 
+                                DatabaseReference exercisePerformedRef = getRootDataReference().child("daysPerformed")
+                                        .child(mDayReference.getKey())
+                                        .child("" + mCurrentUnixTime)
+                                        .push();
+
                                 // Also create a node in the database that will be filled in later by
                                 // the user
-                                DatabaseReference newExerciseToPerform =  createDataForExerciseTimestamp(
-                                        data, exerciseTimestampRef);
+                                DatabaseReference newExerciseToPerform =  createDataForExercise(
+                                        data, exercisePerformedRef);
                                 data.setExerciseToPerformUrl(newExerciseToPerform.toString());
 
                                 fragmentModelList.add(data) ;
-                                mStatePagerAdapter.notifyDataSetChanged();
+                                adapterTempVar.notifyDataSetChanged();
 
                                 sequenceNo[0]++;
-                            }
 
+                                // If this is the last exercise
+                                if (exerciseRef.getKey().equalsIgnoreCase(tmpKey[0]) && setNo >= sets) {
+                                    fragmentModelList.add(null);
+                                }
+
+
+                            } // end exercise loop
+
+                            mActiveExerciseViewPager.setAdapter(mStatePagerAdapter);
                         }
 
                         @Override
@@ -123,10 +149,22 @@ public class ActiveWorkoutActivity extends BaseActivity {
                             Log.d(TAG, databaseError.getMessage());
                             Log.d(TAG, databaseError.getDetails());
                         }
+
                     });
+
+                    dayExerciseCount += 1;
+                    Log.d(TAG, "count: " + dayExerciseCount);
+                    Log.d(TAG, "modelSize: " + fragmentModelList.size());
+                } // end all exercises loop
+
+                if (dayExerciseCount == fragmentModelList.size()) {
+
+                    fragmentModelList.add(null);
+                    mStatePagerAdapter.notifyDataSetChanged();
                 }
-                mActiveExerciseViewPager = findViewById(R.id.active_exercise_pager);
-                mActiveExerciseViewPager.setAdapter(mStatePagerAdapter);
+
+                mStatePagerAdapter = adapterTempVar;
+
             }
 
 
@@ -136,6 +174,8 @@ public class ActiveWorkoutActivity extends BaseActivity {
                 Log.d(TAG, databaseError.getMessage());
                 Log.d(TAG, databaseError.getDetails());
             }
+
+
         });
     }
 
@@ -205,35 +245,42 @@ public class ActiveWorkoutActivity extends BaseActivity {
         public ExercisePagerAdapter(FragmentManager fm, List<PagerAdapterModel> model) {
             super(fm);
             this.mModel = model;
+
         }
 
         @Override
         public Fragment getItem(int position) {
             PagerAdapterModel currentModel = mModel.get(position);
             // Exercise Url passed to Fragment so that we don't have to retrieve it again.
+
+            Log.d("ExercisePagerAdapter", "fragment position: "+ position);
+
+            if (currentModel == null) {
+                return ActiveWorkoutCompletedFragment.newInstance(mModel.get(position - 1)
+                        .getExerciseToPerformUrl());
+            }
             return ActiveExerciseFragment.newInstance(currentModel.getExerciseToPerformUrl(),
-                    currentModel.getExerciseUrl(),
-                    currentModel.getSetNo());
+                currentModel.getExerciseUrl(),
+                currentModel.getSetNo());
+
         }
 
         @Override
         public int getCount() {
-            return mModel.size();
+            return mModel.size() ;
         }
     }
 
     /**
      * Creates exercises for an exercise date (timestamp) in the "daysPerformed" node.
      * @param exerciseData Model containing the default data for an exercise to be performed
-     * @param dateRef DatabaseReference to the timestamp that this data should be created for
+     * @param exercisePerformedRef
      * @return DatabaseReference to the newly created exercise (that is to be performed).
      */
-    private DatabaseReference createDataForExerciseTimestamp(PagerAdapterModel exerciseData, DatabaseReference dateRef) {
+    private DatabaseReference createDataForExercise(PagerAdapterModel exerciseData, DatabaseReference exercisePerformedRef) {
 
         DatabaseReference exRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(exerciseData.getExerciseUrl());
-
-        DatabaseReference exercisePerformedRef = dateRef.push();
 
         Map<String, Object> exerciseMap = new HashMap<>();
         exerciseMap.put("exerciseKey", exRef.getKey());

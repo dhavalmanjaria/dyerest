@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
 import com.dhavalanjaria.dyerest.models.Exercise;
-import com.dhavalanjaria.dyerest.models.ExerciseField;
+import com.dhavalanjaria.dyerest.points.ActiveExercisePoints;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseDetailViewHolder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -140,6 +140,10 @@ public class ActiveExerciseFragment extends Fragment {
 
                 mExercisePerformedReference.child("values")
                         .updateChildren(map);
+
+                // Note: when adding points from mNewValuesList, the set no. value is also added.
+                // This is a bug and must be fixed.
+                ActiveExercisePoints.updateExercisePerformedPoints(mNewValuesList, mExercisePerformedReference);
 
             }
         });
