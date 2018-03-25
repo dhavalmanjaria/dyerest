@@ -13,6 +13,7 @@ import com.dhavalanjaria.dyerest.fragments.ActiveExerciseFragment;
 import com.dhavalanjaria.dyerest.fragments.ActiveWorkoutCompletedFragment;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
+import com.dhavalanjaria.dyerest.points.ExercisePointsCache;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,12 +30,14 @@ public class ActiveWorkoutActivity extends BaseActivity {
 
     public static final String EXTRA_WORKOUT_DAY_REF_URL = "ActiveWorkoutActivity.WorkoutDay";
     private static final String TAG = "ActiveWorkoutActivity";
+    private static final String EXTRA_EXERCISE_POINTS_MAP = TAG + ".ExercisePointsMap";
 
     private WorkoutDay mWorkoutDayModel;
     private ViewPager mActiveExerciseViewPager;
     private FragmentStatePagerAdapter mStatePagerAdapter;
     private DatabaseReference mDayReference;
-    private static long mCurrentUnixTime;
+    private static final long mCurrentUnixTime = System.currentTimeMillis();
+    private ExercisePointsCache mPointsCache;
 
     public static Intent newIntent(Context context, String workoutDayRefUrl) {
         Intent intent = new Intent(context, ActiveWorkoutActivity.class);
@@ -42,10 +45,35 @@ public class ActiveWorkoutActivity extends BaseActivity {
         return intent;
     }
 
+    /**
+     * Retrieves a HashMap containing exercisePerformed keys and the points accumulated thereof.
+     * This method is a delegate method that gets the cache from ExercisePointsCache
+     * @return HashMap
+     */
+    public HashMap<String, Integer> getExercisePointsCache() {
+        return mPointsCache.getCache();
+    }
+
+    /**
+     * Set the ExercisePointsCache used to save the points accumulated temporarily. This method is a
+     * delegate method that sets the cache from ExercisePointsCache
+     * @param exercisePointsCache
+     */
+    public void setExercisePointsCache(HashMap<String, Integer> exercisePointsCache) {
+        mPointsCache.setCache(exercisePointsCache);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_workout);
+
+        if (savedInstanceState != null) {
+            setExercisePointsCache((HashMap<String, Integer>) savedInstanceState.getSerializable(
+                    EXTRA_EXERCISE_POINTS_MAP));
+        } else {
+             mPointsCache = new ExercisePointsCache(new HashMap<String, Integer>());
+        }
 
         // This should be replaced by a getId() type of thing
         String workoutDayUrl = (String) getIntent().getSerializableExtra(EXTRA_WORKOUT_DAY_REF_URL);
@@ -57,20 +85,17 @@ public class ActiveWorkoutActivity extends BaseActivity {
         final List<PagerAdapterModel> fragmentModelList = new ArrayList<>();
         final ExercisePagerAdapter adapterTempVar = new ExercisePagerAdapter(getSupportFragmentManager(), fragmentModelList);
 
-        mCurrentUnixTime = System.currentTimeMillis();
-
         // This helps us find the last exercise in the sequence. So that we can tell when all
         // the exercises have been fetched.
-        String lastExerciseKey = null;
+        final String[] lastExerciseKey = {null};
 
-        final String[] tmpKey = {null};
         mDayReference.child("exercises").orderByChild("sequenceNumber").limitToLast(1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // First child, which is the only child
                         String key = dataSnapshot.getChildren().iterator().next().getRef().getKey();
-                        tmpKey[0] = key;
+                        lastExerciseKey[0] = key;
                     }
 
                     @Override
@@ -79,7 +104,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
                     }
                 });
 
-        lastExerciseKey = tmpKey[0];
 
 
         mDayReference.child("exercises").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -134,11 +158,11 @@ public class ActiveWorkoutActivity extends BaseActivity {
                                 sequenceNo[0]++;
 
                                 // If this is the last exercise
-                                if (exerciseRef.getKey().equalsIgnoreCase(tmpKey[0]) && setNo >= sets) {
+                                if (exerciseRef.getKey().equalsIgnoreCase(lastExerciseKey[0]) && setNo >= sets) {
                                     fragmentModelList.add(null);
                                 }
-
-
+                                
+                                getExercisePointsCache().put(exercisePerformedRef.getKey(), 0);
                             } // end exercise loop
 
                             mActiveExerciseViewPager.setAdapter(mStatePagerAdapter);
@@ -256,8 +280,11 @@ public class ActiveWorkoutActivity extends BaseActivity {
             Log.d("ExercisePagerAdapter", "fragment position: "+ position);
 
             if (currentModel == null) {
-                return ActiveWorkoutCompletedFragment.newInstance(mModel.get(position - 1)
-                        .getExerciseToPerformUrl());
+                DatabaseReference currentDayRef = getRootDataReference().child("daysPerformed")
+                        .child(mDayReference.getKey())
+                        .child("" + mCurrentUnixTime);
+
+                return ActiveWorkoutCompletedFragment.newInstance(currentDayRef.toString());
             }
             return ActiveExerciseFragment.newInstance(currentModel.getExerciseToPerformUrl(),
                 currentModel.getExerciseUrl(),
@@ -274,7 +301,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
     /**
      * Creates exercises for an exercise date (timestamp) in the "daysPerformed" node.
      * @param exerciseData Model containing the default data for an exercise to be performed
-     * @param exercisePerformedRef
      * @return DatabaseReference to the newly created exercise (that is to be performed).
      */
     private DatabaseReference createDataForExercise(PagerAdapterModel exerciseData, DatabaseReference exercisePerformedRef) {
@@ -291,6 +317,13 @@ public class ActiveWorkoutActivity extends BaseActivity {
         exercisePerformedRef.updateChildren(exerciseMap);
 
         return exercisePerformedRef;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putSerializable(EXTRA_EXERCISE_POINTS_MAP, mPointsCache.getCache());
     }
 
     @Override

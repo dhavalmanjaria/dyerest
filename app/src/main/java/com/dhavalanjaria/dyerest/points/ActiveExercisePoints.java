@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ public class ActiveExercisePoints {
     private static final String TAG = "ActiveExercisePoints";
     private List<ActiveExerciseField> mActiveExerciseFieldList;
 
+
     public ActiveExercisePoints() {
     }
 
@@ -30,19 +32,27 @@ public class ActiveExercisePoints {
         mActiveExerciseFieldList = activeExerciseFieldList;
     }
 
-    public static void updateExercisePerformedPoints(List<ActiveExerciseField> fieldsList, DatabaseReference exercisePerformedReference) {
-        int points = 0;
-        for (ActiveExerciseField field: fieldsList) {
-            points += field.getValue();
+    public static void updateExercisePoints(ExercisePointsCache pointsCache, DatabaseReference mDayTimeStampRef) {
+        HashMap<String, Integer> map = pointsCache.getCache();
+
+        int totalPointsForDay = 0;
+
+        for (String key: map.keySet()) {
+            mDayTimeStampRef.child(key)
+                    .child("points")
+                    .setValue(map.get(key));
+
+            DatabaseReference exercisePerformedRef = mDayTimeStampRef.child(key);
+            mDayTimeStampRef.child(key)
+                    .child("points")
+                    .addValueEventListener(new ExercisePointsAddedListener(exercisePerformedRef,
+                            map.get(key)));
+
+            totalPointsForDay += map.get(key);
         }
 
-        exercisePerformedReference.child("points").setValue(points);
-        String dayKey = exercisePerformedReference.getParent().getParent().getKey();
 
-        final int pointsTemp = points;
-
-        exercisePerformedReference.child("points")
-                .addValueEventListener(new ExercisePointsAddedListener(points));
-
+        mDayTimeStampRef
+                .addValueEventListener(new DayPointsListener(totalPointsForDay));
     }
 }

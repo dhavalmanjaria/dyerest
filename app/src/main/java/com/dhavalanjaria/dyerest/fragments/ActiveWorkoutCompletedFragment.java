@@ -9,8 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
+import com.dhavalanjaria.dyerest.points.ActiveExercisePoints;
+import com.dhavalanjaria.dyerest.points.ExercisePointsCache;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 /**
  * Created by Dhaval Anjaria on 3/21/2018.
@@ -18,17 +24,18 @@ import com.google.firebase.database.DatabaseReference;
 
 public class ActiveWorkoutCompletedFragment extends Fragment {
 
-    private static final String KEY_EXERCISE_PERFORMED_URL = "ExercisePerformedUrl";
-    private DatabaseReference mExercisePerformedReference;
+    private static final String KEY_DAY_PERFORMED_URL = "ExercisePerformedUrl";
+    private static final String TAG = "AWCompletedFragment";
+    private DatabaseReference mDayPerformedReference;
     private Button mOkButton;
 
-    public static ActiveWorkoutCompletedFragment newInstance(String exercisePerformedUrl) {
+    public static ActiveWorkoutCompletedFragment newInstance(String dayPerformedUrl) {
 
         Bundle args = new Bundle();
 
         ActiveWorkoutCompletedFragment fragment = new ActiveWorkoutCompletedFragment();
         fragment.setArguments(args);
-        args.putString(KEY_EXERCISE_PERFORMED_URL, exercisePerformedUrl);
+        args.putString(KEY_DAY_PERFORMED_URL, dayPerformedUrl);
         return fragment;
     }
 
@@ -39,6 +46,22 @@ public class ActiveWorkoutCompletedFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_active_workout_completed, container, false);
 
+        String exercisePerformedUrl = getArguments().getString(KEY_DAY_PERFORMED_URL);
+        mDayPerformedReference = FirebaseDatabase.getInstance().getReferenceFromUrl(exercisePerformedUrl);
+
+        mOkButton = v.findViewById(R.id.workout_completed_ok_button);
+        mOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HashMap<String, Integer> map = ((ActiveWorkoutActivity)getActivity()).getExercisePointsCache();
+
+                ExercisePointsCache cache = new ExercisePointsCache(map);
+
+                ActiveExercisePoints.updateExercisePoints(cache, mDayPerformedReference);
+                getActivity().finish();
+
+            }
+        });
 
         return v;
     }

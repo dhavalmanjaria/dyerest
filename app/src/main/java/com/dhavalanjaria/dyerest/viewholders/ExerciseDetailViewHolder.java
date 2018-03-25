@@ -57,6 +57,11 @@ public class ExerciseDetailViewHolder extends RecyclerView.ViewHolder {
         mExerciseFieldText.setText(activeExerciseField.getFieldName());
         mExerciseValueEdit.setHint("" + activeExerciseField.getValue());
 
+        if (activeExerciseField.getFieldName().equalsIgnoreCase("set")) {
+            mExerciseValueEdit.setFocusable(false);
+            mExerciseValueEdit.setEnabled(false);
+        }
+
         mExerciseValueEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -77,7 +82,7 @@ public class ExerciseDetailViewHolder extends RecyclerView.ViewHolder {
                     mActiveExerciseFields.get(getAdapterPosition()).setValue(newValue);
                 }
                 catch (NumberFormatException ex) {
-                    Toast.makeText(itemView.getContext(), "Illegal characters entered", Toast.LENGTH_SHORT)
+                    Toast.makeText(itemView.getContext(), "Invalid value entered", Toast.LENGTH_SHORT)
                             .show();
                 }
 

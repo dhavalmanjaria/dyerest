@@ -12,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
 import com.dhavalanjaria.dyerest.models.Exercise;
-import com.dhavalanjaria.dyerest.points.ActiveExercisePoints;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseDetailViewHolder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -130,9 +131,12 @@ public class ActiveExerciseFragment extends Fragment {
                 mNewValuesList = adapter.getExerciseFieldsList();
                 Log.d(TAG, mNewValuesList.toString());
 
+                int points = 0;
+
                 Map<String, Object> map = new HashMap<>();
                 for (ActiveExerciseField field: mNewValuesList) {
                     map.put(field.getFieldName(), field.getValue());
+                    points += field.getValue();
                 }
 
                 // Set was added for the ViewHolder. Here we need to remove it.
@@ -141,10 +145,11 @@ public class ActiveExerciseFragment extends Fragment {
                 mExercisePerformedReference.child("values")
                         .updateChildren(map);
 
-                // Note: when adding points from mNewValuesList, the set no. value is also added.
-                // This is a bug and must be fixed.
-                ActiveExercisePoints.updateExercisePerformedPoints(mNewValuesList, mExercisePerformedReference);
+                ((ActiveWorkoutActivity)getActivity()).getExercisePointsCache().put(
+                        mExercisePerformedReference.getKey(), points);
 
+                Toast.makeText(getActivity(), "Exercise saved", Toast.LENGTH_SHORT)
+                        .show();
             }
         });
 
