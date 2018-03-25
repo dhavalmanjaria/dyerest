@@ -48,26 +48,7 @@ public class ExercisePointsAddedListener implements ValueEventListener {
                         BaseActivity.getRootDataReference()
                                 .child("exercises")
                                 .child(exerciseKey)
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String pointsStr = (long) dataSnapshot.child("totalPoints")
-                                                .getValue() + "";
-                                        int existingPoints = 0;
-                                        try {
-                                            existingPoints = Integer.parseInt(pointsStr);
-                                        } catch (NumberFormatException ex) {
-                                            Log.e(TAG, ex.getStackTrace().toString());
-                                        }
-                                        int points = existingPoints + pointsToAdd;
-                                        dataSnapshot.child("totalPoints").getRef().setValue(points);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
+                                .addListenerForSingleValueEvent(new UpdateTotalPointsListener(pointsToAdd));
 
                     }
                     @Override

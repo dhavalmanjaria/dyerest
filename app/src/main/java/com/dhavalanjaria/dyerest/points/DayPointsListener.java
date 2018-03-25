@@ -15,9 +15,11 @@ import com.google.firebase.database.ValueEventListener;
 public class DayPointsListener implements ValueEventListener {
     private static final String TAG = "DayPointsListener";
     private int pointsToAdd;
+    private String mDayKey;
 
-    public DayPointsListener(int pointsToAdd) {
+    public DayPointsListener(int pointsToAdd, String dayKey) {
         this.pointsToAdd = pointsToAdd;
+        this.mDayKey = dayKey;
     }
 
     public int getPointsToAdd() {
@@ -31,39 +33,10 @@ public class DayPointsListener implements ValueEventListener {
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
 
-        String dayRefKey = dataSnapshot.getRef()
-                .getParent()
-                .getKey();
-
         final DatabaseReference dayRef = BaseActivity.getRootDataReference().child("days")
-                .child(dayRefKey);
+                .child(mDayKey);
 
-        dayRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int existingPoints = 0;
-                String existingPointsStr = (long) dataSnapshot.child("totalPoints")
-                        .getValue() + "";
-                int points = 0;
-                if (existingPointsStr != null) {
-                    try {
-                        existingPoints = Integer.parseInt(existingPointsStr);
-                    } catch (NumberFormatException ex) {
-                        Log.e(TAG, ex.getStackTrace().toString());
-                    }
-                    points = pointsToAdd + existingPoints;
-
-                } else {
-                    points = pointsToAdd;
-                }
-                dayRef.child("totalPoints").setValue(points);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        dayRef.addListenerForSingleValueEvent(new UpdateTotalPointsListener(pointsToAdd));
 
     }
 

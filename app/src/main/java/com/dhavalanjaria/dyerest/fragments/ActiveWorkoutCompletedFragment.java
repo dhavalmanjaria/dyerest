@@ -11,7 +11,7 @@ import android.widget.Button;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
-import com.dhavalanjaria.dyerest.points.ActiveExercisePoints;
+import com.dhavalanjaria.dyerest.points.PointsUpdater;
 import com.dhavalanjaria.dyerest.points.ExercisePointsCache;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -57,7 +57,10 @@ public class ActiveWorkoutCompletedFragment extends Fragment {
 
                 ExercisePointsCache cache = new ExercisePointsCache(map);
 
-                ActiveExercisePoints.updateExercisePoints(cache, mDayPerformedReference);
+                PointsUpdater pointsUpdater = new PointsUpdater(
+                        cache, mDayPerformedReference, getActivity());
+
+                pointsUpdater.updateExercisePointsFromCache();
                 getActivity().finish();
 
             }

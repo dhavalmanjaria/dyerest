@@ -45,4 +45,7 @@
     <string name="new_day_name">New Day Name</string>
     <string name="view_history">View History</string>
     <string name="end_workout">End Workout?</string>
+    <string name="workout_id_key">com.dhavalanjaria.dyerest.WorkoutId</string>
+    <string name="workout_day_key">com.dhavalanjaria.dyerest.WorkoutDay</string>
+    <string name="preference_file_key">com.dhavalanjaria.dyerest.PREFERENCE_FILE_KEY</string>
 </resources>
