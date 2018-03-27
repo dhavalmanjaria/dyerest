@@ -24,7 +24,6 @@ import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.DayExercise;
 import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
-import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -34,7 +33,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/7/2018.
@@ -55,6 +59,8 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
     private Button mLaunchButton;
     private Button mEditDayButton;
     private LayoutInflater mLayoutInflater;
+    private Map<String, Object> lastPerformedData;
+    private Map<String, Object> mTargetMap;
 
     public WorkoutDayViewHolder(final View itemView, LayoutInflater layoutInflater) {
         super(itemView);
@@ -81,6 +87,11 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 WorkoutDay day = dataSnapshot.getValue(WorkoutDay.class);
                 mDayNameTextView.setText(day.getName());
+
+                if (dataSnapshot.child("exercises").getValue() == null) {
+                    mLaunchButton.setEnabled(false);
+                    mLaunchButton.setFocusable(false);
+                }
                 // Other Views go here
             }
 
@@ -159,6 +170,29 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
+
+    private class ExercisePreviewAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExercisePreviewViewHolder> {
+
+        public ExercisePreviewAdapter(@NonNull FirebaseRecyclerOptions<DayExercise> options) {
+            super(options);
+        }
+
+        @Override
+        protected void onBindViewHolder(@NonNull DayExercisePreviewViewHolder holder, int position,
+                                        @NonNull DayExercise model) {
+            holder.bind(model, getRef(position));
+
+        }
+
+        @Override
+        public DayExercisePreviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View exerciseView = mLayoutInflater.inflate(R.layout.workout_detail_exercise_item, parent,
+                    false);
+
+            return new DayExercisePreviewViewHolder(exerciseView);
+        }
+    }
+
     private class DayExercisePreviewViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mExercisePoints;
@@ -179,8 +213,10 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         public void bind(DayExercise exercise, DatabaseReference ref) {
             String exerciseKey = ref.getKey();
 
-            DatabaseReference exerciseRef = BaseActivity.getRootDataReference().child("exercises")
+            final DatabaseReference exerciseRef = BaseActivity.getRootDataReference().child("exercises")
                     .child(exerciseKey);
+
+            Map<String, Object> targetMap = getTargetMap(exerciseRef);
 
             exerciseRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -188,6 +224,10 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                     String name = (String) dataSnapshot.getValue();
                     mExerciseName.setText(name);
                     // Other Exercise Views here.
+                    Map<String, Object> targetMap = getTargetMap(exerciseRef);
+                    setTargetPointsFromMap(targetMap , mExercisePoints);
+                    setTargetValuesFromMap(targetMap , mExerciseTarget);
+                    setLastPerformedFromMap(targetMap , mPreviousDate);
                 }
 
                 @Override
@@ -195,47 +235,78 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
                 }
             });
-
-            // This method will map the last performed exercise
-            // For now. It will simply show the name.
-
-
-//            StringBuffer targetText = new StringBuffer();
-//
-//            // Should be getLastExerciseMap or something
-////            List<ActiveExerciseField> targets = exercise.getActiveExerciseFields();
-////            for (ActiveExerciseField t: targets) {
-////                targetText.append(t.getValue() + " ");
-////            }
-//
-//            targetText.append("0 - 0 - 0");
-//            mExerciseTarget.setText(targetText.toString());
-//            mExercisePoints.setText("" + exercise.getPoints());
-//
-//            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-//            mPreviousDate.setText(formattedDate);
         }
     }
 
-    private class ExercisePreviewAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExercisePreviewViewHolder> {
+    /**
+     * Stores the exercise target node into a Map<> so that queries don't need to go out to Firebase
+     * @param exerciseRef Reference to the exercise used to find the target.
+     * @return Map<String, Object> Structure containing the exercise target node with one
+     * modification: the Map<> also has a node "date" containing the date.
+     */
+    public Map<String, Object> getTargetMap(DatabaseReference exerciseRef) {
 
-        public ExercisePreviewAdapter(@NonNull FirebaseRecyclerOptions<DayExercise> options) {
-            super(options);
+            DatabaseReference ref = BaseActivity.getRootDataReference()
+                    .child("targets")
+                    .child(exerciseRef.getKey());
+
+            final Map<String, Object> retval = new HashMap<>();
+
+            ref.orderByKey().limitToLast(1)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            dataSnapshot = dataSnapshot.getChildren().iterator().next();
+
+                            retval.put("date", dataSnapshot.getRef().getKey());
+                            retval.putAll((Map<String, Object>) dataSnapshot.getValue());
+
+                            mTargetMap = retval;
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+            return mTargetMap;
+    }
+
+    public void setTargetPointsFromMap(Map<String, Object> targetMap, final TextView v) {
+      String pointsStr = (long) targetMap.get("points") + "";
+
+        v.setText(pointsStr);
+    }
+
+    public void setTargetValuesFromMap(Map<String, Object> targetMap, final TextView v) {
+
+
+        Map<String, Object> valuesMap = (Map<String, Object>) targetMap.get("values");
+
+        List<String> bufstring = new LinkedList<>();
+        for (String key: valuesMap.keySet()) {
+            bufstring.add(valuesMap.get(key).toString());
+            bufstring.add(" - ");
         }
+        bufstring.remove(bufstring.size() - 1);
 
-        @Override
-        protected void onBindViewHolder(@NonNull DayExercisePreviewViewHolder holder, int position, @NonNull DayExercise model) {
-            holder.bind(model, getRef(position));
-
+        String targetString = "";
+        for (String s: bufstring) {
+            targetString += s;
         }
+        v.setText(targetString);
+    }
 
-        @Override
-        public DayExercisePreviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View exerciseView = mLayoutInflater.inflate(R.layout.workout_detail_exercise_item, parent,
-                    false);
+    public void setLastPerformedFromMap(Map<String, Object> targetMap, final TextView v) {
 
-            return new DayExercisePreviewViewHolder(exerciseView);
-        }
+        String dateStr = targetMap.get("date") + "";
+        long dateLong = Long.parseLong(dateStr);
+
+        Date date = new Date(dateLong);
+
+        String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
+
+        v.setText(formattedDate);
     }
 
     @Deprecated

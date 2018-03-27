@@ -13,6 +13,7 @@ import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.points.PointsUpdater;
 import com.dhavalanjaria.dyerest.points.ExercisePointsCache;
+import com.dhavalanjaria.dyerest.points.ExerciseTargetUpdater;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -61,6 +62,12 @@ public class ActiveWorkoutCompletedFragment extends Fragment {
                         cache, mDayPerformedReference, getActivity());
 
                 pointsUpdater.updateExercisePointsFromCache();
+
+                // Perhaps this should be called by the PointsUpdater since targets have to do
+                // with the points system.
+                ExerciseTargetUpdater targetUpdater = new ExerciseTargetUpdater(mDayPerformedReference, cache);
+                targetUpdater.addTargetFromCache();
+
                 getActivity().finish();
 
             }
