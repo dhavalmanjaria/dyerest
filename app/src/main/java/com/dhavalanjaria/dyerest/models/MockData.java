@@ -118,24 +118,23 @@ public class MockData {
         return retVal;
     }
 
-    public static List<DayPerformed> getDayPerformed() {
+    public static List<ExercisePoints> getDayPerformed() {
         List<ToDeleteExercise> toDeleteExercises = getRandomExercises();
 
         WorkoutDay day = getWorkoutDays().get(0);
 
         final Calendar cal = Calendar.getInstance();
 
-        ArrayList<DayPerformed> retval = new ArrayList<DayPerformed>();
+        ArrayList<ExercisePoints> retval = new ArrayList<ExercisePoints>();
         int i = toDeleteExercises.size();
         for (ToDeleteExercise e: toDeleteExercises) {
-            DayPerformed dayPerformed = new DayPerformed();
+            ExercisePoints exercisePoints = new ExercisePoints();
 
             cal.add(Calendar.DATE, i--);
-            dayPerformed.setDatePerformed(cal.getTime());
-            dayPerformed.setPoints(200);
-            dayPerformed.setDayKey(day.getName());
+            exercisePoints.setPoints(200);
+            exercisePoints.setExerciseName(day.getName());
 
-            retval.add(dayPerformed);
+            retval.add(exercisePoints);
         }
         return retval;
     }

@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.R;
-import com.dhavalanjaria.dyerest.models.DayPerformed;
+import com.dhavalanjaria.dyerest.models.ExercisePoints;
 import com.dhavalanjaria.dyerest.models.ToDeleteExercisePerformed;
 import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.viewholders.ExercisePerformedViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.ExerciseDatePointsViewHolder;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import java.util.List;
  * Created by Dhaval Anjaria on 2/26/2018.
  */
 
+@Deprecated
 public class PointsByDateFragment extends Fragment {
-    private DayPerformed mDayPerformed;
+    private ExercisePoints mExercisePoints;
 
     private RecyclerView mExercisePerformedRecycler;
-    private GetScreenshotAdapter adapter;
 
     // should eventually create a new instance with args containing a "day key"
     // We get the list of exercises from the DayKey and populate the RecyclerView from there
@@ -45,34 +45,8 @@ public class PointsByDateFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_exercise_performed, container, false);
 
         mExercisePerformedRecycler = v.findViewById(R.id.exercise_performed_recycler);
-        mExercisePerformedRecycler.setAdapter(new GetScreenshotAdapter());
         mExercisePerformedRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         return v;
     }
 
-    private class GetScreenshotAdapter extends RecyclerView.Adapter<ExercisePerformedViewHolder> {
-
-        private List<ToDeleteExercisePerformed> mModel;
-
-        public GetScreenshotAdapter() {
-            mModel = MockData.getExercisesPerformed();
-        }
-
-        @Override
-        public ExercisePerformedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = getLayoutInflater().inflate(R.layout.exercise_performed_item, parent, false);
-
-            return new ExercisePerformedViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(ExercisePerformedViewHolder holder, int position) {
-            holder.bind(mModel.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return mModel.size();
-        }
-    }
 }

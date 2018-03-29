@@ -273,8 +273,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setTargetPointsFromMap(Map<String, Object> targetMap, final TextView v) {
-      String pointsStr = (long) targetMap.get("points") + "";
-
+        String pointsStr = (long) targetMap.get("points") + "";
         v.setText(pointsStr);
     }
 
@@ -286,7 +285,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         List<String> bufstring = new LinkedList<>();
         for (String key: valuesMap.keySet()) {
             bufstring.add(valuesMap.get(key).toString());
-            bufstring.add(" - ");
+            bufstring.add(" | ");
         }
         bufstring.remove(bufstring.size() - 1);
 

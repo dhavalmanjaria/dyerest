@@ -9,12 +9,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dhavalanjaria.dyerest.models.DayPerformed;
+import com.dhavalanjaria.dyerest.models.ExercisePoints;
 import com.dhavalanjaria.dyerest.models.MockData;
-import com.dhavalanjaria.dyerest.viewholders.DayPerformedViewHolder;
+import com.dhavalanjaria.dyerest.viewholders.ExerciseHistoryViewHolder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseHistoryActivity extends BaseActivity {
@@ -22,15 +26,14 @@ public class ExerciseHistoryActivity extends BaseActivity {
     public static final String TAG = "ExerciseHistoryActivity";
     public static final String EXTRA_WORKOUT_DAY = TAG + ".WorkoutDay";
 
-    private RecyclerView mPointsByDateRecycler;
+    private RecyclerView mPointsByExerciseRecycler;
     private DatabaseReference mReference;
     private FragmentPagerAdapter mPagerAdapter;
-    private GetScreenshotAdapter adapter;
+    private ExerciseHistoryAdapter adapter;
+    private List<DatabaseReference> mExerciseRefs;
 
-    public static Intent newIntent(Context context, DatabaseReference workoutDayRef) {
+    public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, ExerciseHistoryActivity.class);
-        //TODO: See Option A for Schema.
-        intent.putExtra(EXTRA_WORKOUT_DAY, workoutDayRef.toString());
         return intent;
     }
 
@@ -39,9 +42,30 @@ public class ExerciseHistoryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise_history);
 
-        mPointsByDateRecycler = findViewById(R.id.points_by_date_recycler);
-        mPointsByDateRecycler.setAdapter(new GetScreenshotAdapter());
-        mPointsByDateRecycler.setLayoutManager(new LinearLayoutManager(this));
+        DatabaseReference allExercisesRef = BaseActivity.getRootDataReference().child("exercises");
+
+        mPointsByExerciseRecycler = findViewById(R.id.points_by_exercise_recycler);
+        mPointsByExerciseRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        mExerciseRefs = new ArrayList<>();
+        allExercisesRef.orderByKey()
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot exerciseSnap: dataSnapshot.getChildren()) {
+                    mExerciseRefs.add(exerciseSnap.getRef());
+
+                }
+
+                mPointsByExerciseRecycler.setAdapter(new ExerciseHistoryAdapter(mExerciseRefs));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
@@ -49,23 +73,23 @@ public class ExerciseHistoryActivity extends BaseActivity {
         return null;
     }
 
-    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayPerformedViewHolder> {
+    private class ExerciseHistoryAdapter extends RecyclerView.Adapter<ExerciseHistoryViewHolder> {
 
-        private List<DayPerformed> mModel;
+        private List<DatabaseReference> mModel;
 
-        public GetScreenshotAdapter() {
-            mModel = MockData.getDayPerformed();
+        public ExerciseHistoryAdapter(List<DatabaseReference> model) {
+            mModel = model;
         }
 
         @Override
-        public DayPerformedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = getLayoutInflater().inflate(R.layout.points_by_date_item, parent, false);
+        public ExerciseHistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = getLayoutInflater().inflate(R.layout.points_by_exercise_item, parent, false);
 
-            return new DayPerformedViewHolder(v);
+            return new ExerciseHistoryViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(DayPerformedViewHolder holder, int position) {
+        public void onBindViewHolder(ExerciseHistoryViewHolder holder, int position) {
             holder.bind(mModel.get(position));
         }
 

@@ -24,10 +24,10 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".ExerciseGuideActivity" />
         <activity android:name=".fragments.ExerciseCommentsActivity" />
-        <activity android:name=".PointsByDatePagerActivity" />
+        <activity android:name=".ExercisePointsByDateActivity" />
         <activity android:name=".AddExerciseToDayActivity" />
         <activity android:name=".ListAllExerciseActivity" />
-        <activity android:name=".AddNewExerciseActivity"></activity>
+        <activity android:name=".AddNewExerciseActivity" />
     </application>
 
 </manifest>

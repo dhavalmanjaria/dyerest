@@ -58,7 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
             case R.id.view_history_menu_item:
-                intent = ExerciseHistoryActivity.newIntent(this, getRootDataReference());
+                intent = ExerciseHistoryActivity.newIntent(this);
                 startActivity(intent);
                 return true;
             default:

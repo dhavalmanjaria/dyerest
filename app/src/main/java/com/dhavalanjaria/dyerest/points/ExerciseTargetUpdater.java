@@ -64,21 +64,21 @@ public class ExerciseTargetUpdater {
                     int points = exercisePerfSnap.child("points").getValue(Integer.class);
 
                     Map<String, Object> targetMap = new HashMap<>();
-                    targetMap.put("dayKey", dayKey);
+                    targetMap.put("exerciseName", dayKey);
                     targetMap.put("exercisePerformedKey", exPerfKey);
                     targetMap.put("points", points);
                     targetMap.put("values", valuesMap);
 
                     ref.child(exerciseKey)
                             .child(mDayTimestampRef.getKey())
-                           .updateChildren(targetMap);
+                            .updateChildren(targetMap);
 
                     /**
                      * The structure this creates is: exercise -> timestamp ->
-                     * {dayKey: ..., exercisePerformedKey: ...}
+                     * {exerciseName: ..., exercisePerformedKey: ...}
                      * The idea behind this structure is that we can organize by date and get the
                      * values for the exercise the last time it was performed, whenever that was.
-                     * The dayKey and the exercisePerformedKey make it simple to find the values and
+                     * The exerciseName and the exercisePerformedKey make it simple to find the values and
                      * points for that timestamp.
                      */
                 }
