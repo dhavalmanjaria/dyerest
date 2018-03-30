@@ -121,6 +121,7 @@ public class EditExerciseActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mMaxSetsEdit.setEnabled(false);
+                    mMaxSetsEdit.setText("1");
                     mExerciseType = "CARDIO";
                 }
             }

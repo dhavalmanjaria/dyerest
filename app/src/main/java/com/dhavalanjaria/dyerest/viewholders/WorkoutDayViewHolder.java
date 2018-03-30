@@ -225,9 +225,14 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                     mExerciseName.setText(name);
                     // Other Exercise Views here.
                     Map<String, Object> targetMap = getTargetMap(exerciseRef);
-                    setTargetPointsFromMap(targetMap , mExercisePoints);
-                    setTargetValuesFromMap(targetMap , mExerciseTarget);
-                    setLastPerformedFromMap(targetMap , mPreviousDate);
+
+                    if (targetMap != null) {
+                        setTargetPointsFromMap(targetMap , mExercisePoints);
+                        setTargetValuesFromMap(targetMap , mExerciseTarget);
+                        setLastPerformedFromMap(targetMap , mPreviousDate);
+                    } else {
+
+                    }
                 }
 
                 @Override
@@ -250,18 +255,28 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                     .child("targets")
                     .child(exerciseRef.getKey());
 
+            if (ref.getKey() == null) {
+                mTargetMap = null;
+                return null;
+            }
+
             final Map<String, Object> retval = new HashMap<>();
 
             ref.orderByKey().limitToLast(1)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            dataSnapshot = dataSnapshot.getChildren().iterator().next();
+                            if (dataSnapshot.getValue() == null) {
+                                mTargetMap = null;
+                            } else {
+                                dataSnapshot = dataSnapshot.getChildren().iterator().next();
 
-                            retval.put("date", dataSnapshot.getRef().getKey());
-                            retval.putAll((Map<String, Object>) dataSnapshot.getValue());
+                                retval.put("date", dataSnapshot.getRef().getKey());
+                                retval.putAll((Map<String, Object>) dataSnapshot.getValue());
 
-                            mTargetMap = retval;
+                                mTargetMap = retval;
+                            }
+
                         }
 
                         @Override
@@ -307,37 +322,4 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         v.setText(formattedDate);
     }
-
-    @Deprecated
-    private class GetScreenshotExerciseAdapter extends RecyclerView.Adapter<DayExercisePreviewViewHolder> {
-
-        private List<ToDeleteExercise> mToDeleteExerciseModel;
-
-        // This constructor stays because we need to get exercise from that particular day
-        // Using nothing now but it needs to change once we add exercises to the WorkoutDay Firebase
-        // schema
-        public GetScreenshotExerciseAdapter(WorkoutDay day) {
-
-        }
-
-        @Override
-        public DayExercisePreviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View exerciseView = mLayoutInflater.inflate(R.layout.workout_detail_exercise_item, parent,
-                    false);
-
-            return new DayExercisePreviewViewHolder(exerciseView);
-        }
-
-        @Override
-        public void onBindViewHolder(DayExercisePreviewViewHolder holder, int position) {
-
-        }
-
-        @Override
-        public int getItemCount() {
-           return 0;
-        }
-    }
-
-
 }

@@ -17,14 +17,13 @@ public class DayExerciseSequenceViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mSequenceNumberText;
     private TextView mExerciseNameText;
-    private TextView mOptionsMenu;
 
     public DayExerciseSequenceViewHolder(View itemView) {
         super(itemView);
 
         mSequenceNumberText = itemView.findViewById(R.id.exercise_sequence_number_text);
         mExerciseNameText = itemView.findViewById(R.id.edit_sequence_exercise_name_text);
-        mOptionsMenu = itemView.findViewById(R.id.options_menu_text);
+
 
     }
 
@@ -32,8 +31,6 @@ public class DayExerciseSequenceViewHolder extends RecyclerView.ViewHolder {
         mExerciseNameText.setText(exerciseName);
         mSequenceNumberText.setText(model.getSequenceNumber() + "");
 
-        PopupMenu menu = new PopupMenu(itemView.getContext(), mOptionsMenu);
-        menu.inflate(R.menu.edit_delete_popup_menu);
 
     }
 
@@ -43,9 +40,6 @@ public class DayExerciseSequenceViewHolder extends RecyclerView.ViewHolder {
         String exerciseName = exerciseRef.child("name").toString();
         mExerciseNameText.setText(exerciseName);
         mSequenceNumberText.setText(model.getSequenceNumber());
-
-        PopupMenu menu = new PopupMenu(itemView.getContext(), mOptionsMenu);
-        menu.inflate(R.menu.edit_delete_popup_menu);
 
         // Edit exercise with menu
 

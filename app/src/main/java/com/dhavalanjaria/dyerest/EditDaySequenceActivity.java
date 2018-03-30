@@ -1,11 +1,14 @@
 package com.dhavalanjaria.dyerest;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EditDaySequenceActivity extends BaseActivity {
@@ -54,10 +58,35 @@ public class EditDaySequenceActivity extends BaseActivity {
 
         mAdapter = new SequenceItemAdapter(options);
 
-        GetScreenshotAdapter adapter = new GetScreenshotAdapter();
+        final GetScreenshotAdapter adapter = new GetScreenshotAdapter();
+
+        mSequenceItemRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mSequenceItemRecycler.setAdapter(adapter);
-        mSequenceItemRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP | ItemTouchHelper.START | ItemTouchHelper.END);
+                // See also: makeMovementFlags()
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+
+                Collections.swap(adapter.getModel(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(mSequenceItemRecycler);
     }
 
     @Override
@@ -65,7 +94,7 @@ public class EditDaySequenceActivity extends BaseActivity {
         return mWorkoutDayReference.orderByKey();
     }
 
-    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayExerciseSequenceViewHolder> {
+    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayExerciseSequenceViewHolder>{
 
         private List<DayExercise> mModel;
 
@@ -73,9 +102,14 @@ public class EditDaySequenceActivity extends BaseActivity {
             mModel = MockData.getWorkoutSequence();
         }
 
+        public List<DayExercise> getModel() {
+            return mModel;
+        }
+
         @Override
         public DayExerciseSequenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent, false);
+
 
             return new DayExerciseSequenceViewHolder(v);
         }
@@ -83,6 +117,7 @@ public class EditDaySequenceActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(DayExerciseSequenceViewHolder holder, int position) {
             holder.bind(mModel.get(position), mModel.get(position).getExerciseKey());
+
         }
 
         @Override
