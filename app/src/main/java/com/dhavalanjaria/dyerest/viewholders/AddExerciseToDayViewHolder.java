@@ -42,14 +42,14 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(final DayExercise exercise, final DatabaseReference exerciseRef, final DatabaseReference dayReference) {
+    public void bind(final DayExercise dayExercise, final DatabaseReference exerciseRef, final DatabaseReference dayReference) {
 
         class CheckChangedListener implements CompoundButton.OnCheckedChangeListener {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    exercise.setExerciseKey(exerciseRef.getKey());
+
                     getSequenceNumberQuery(dayReference).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -62,9 +62,28 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
                                 lastSequenceNumber = lastExercise.getSequenceNumber();
                             }
 
-                            exercise.setSequenceNumber(lastSequenceNumber + 1);
-                            Map<String, Object> dayExercises = exercise.toMap();
-                            dayReference.child("exercises").child(exerciseRef.getKey()).updateChildren(dayExercises);
+                            dayExercise.setSequenceNumber(lastSequenceNumber + 1);
+
+                            // Now we get the name of the exercise
+                            exerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    String name = (String) dataSnapshot.child("name").getValue();
+
+                                    // Finally we save the new "dayExercise"
+                                    dayExercise.setName(name);
+                                    Map<String, Object> map = dayExercise.toMap();
+                                    dayReference.child("exercises").child(exerciseRef.getKey()).updateChildren(map);
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.e(TAG, databaseError.getMessage());
+                                    Log.e(TAG, databaseError.getDetails());
+                                }
+                            });
                         }
 
                         @Override

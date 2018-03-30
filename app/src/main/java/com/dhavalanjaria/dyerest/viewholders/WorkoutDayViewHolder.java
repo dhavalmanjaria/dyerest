@@ -82,7 +82,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         Log.d(TAG, workoutDayKey);
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 WorkoutDay day = dataSnapshot.getValue(WorkoutDay.class);
@@ -91,6 +91,9 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 if (dataSnapshot.child("exercises").getValue() == null) {
                     mLaunchButton.setEnabled(false);
                     mLaunchButton.setFocusable(false);
+                } else {
+                    mLaunchButton.setEnabled(true);
+                    mLaunchButton.setFocusable(true);
                 }
                 // Other Views go here
             }
@@ -101,8 +104,6 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
                 Log.d(TAG, databaseError.getDetails());
             }
         });
-
-        //GetScreenshotExerciseAdapter adapter = new GetScreenshotExerciseAdapter(workoutDay);
 
         Query query = ref.child("exercises").orderByChild("sequenceNumber");
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<DayExercise>()

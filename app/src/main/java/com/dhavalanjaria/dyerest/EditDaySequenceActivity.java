@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,14 @@ import com.dhavalanjaria.dyerest.models.MockData;
 import com.dhavalanjaria.dyerest.viewholders.DayExerciseSequenceViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,18 +56,35 @@ public class EditDaySequenceActivity extends BaseActivity {
         mWorkoutDayReference = FirebaseDatabase.getInstance().getReferenceFromUrl(workoutDayKey);
 
         mSequenceItemRecycler = findViewById(R.id.edit_day_sequence_recycler);
+        mSequenceItemRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<DayExercise>()
                 .setQuery(getQuery(), DayExercise.class)
                 .build();
 
-        mAdapter = new SequenceItemAdapter(options);
+        final List<DatabaseReference> model = new ArrayList<>();
 
-        final GetScreenshotAdapter adapter = new GetScreenshotAdapter();
+
+        mAdapter = new SequenceItemAdapter(model);
+        getQuery().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot exerciseSnap: dataSnapshot.getChildren()) {
+                    model.add(exerciseSnap.getRef());
+                }
+
+                mSequenceItemRecycler.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+
 
         mSequenceItemRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        mSequenceItemRecycler.setAdapter(adapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
@@ -75,8 +97,17 @@ public class EditDaySequenceActivity extends BaseActivity {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
 
-                Collections.swap(adapter.getModel(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                Collections.swap(mAdapter.getModel(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                // And now for the fun stuff...
+
+                int i = 1;
+                for (DatabaseReference dayExerciseRef: mAdapter.getModel()) {
+                    dayExerciseRef.child("sequenceNumber").setValue(i);
+                    i++;
+                }
+
+                mAdapter.notifyItemMoved(viewHolder.getLayoutPosition(), target.getAdapterPosition());
+
                 return true;
             }
 
@@ -91,33 +122,32 @@ public class EditDaySequenceActivity extends BaseActivity {
 
     @Override
     public Query getQuery() {
-        return mWorkoutDayReference.orderByKey();
+        return mWorkoutDayReference.child("exercises").orderByChild("sequenceNumber");
     }
 
-    private class GetScreenshotAdapter extends RecyclerView.Adapter<DayExerciseSequenceViewHolder>{
+    private class SequenceItemAdapter extends RecyclerView.Adapter<DayExerciseSequenceViewHolder> {
 
-        private List<DayExercise> mModel;
+        List<DatabaseReference> mModel;
 
-        public GetScreenshotAdapter() {
-            mModel = MockData.getWorkoutSequence();
+        public SequenceItemAdapter(List<DatabaseReference> model) {
+            mModel = model;
         }
 
-        public List<DayExercise> getModel() {
+        public List<DatabaseReference> getModel() {
             return mModel;
         }
 
         @Override
         public DayExerciseSequenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent, false);
-
+            View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent,
+                    false);
 
             return new DayExerciseSequenceViewHolder(v);
         }
 
         @Override
         public void onBindViewHolder(DayExerciseSequenceViewHolder holder, int position) {
-            holder.bind(mModel.get(position), mModel.get(position).getExerciseKey());
-
+            holder.bind(mModel.get(position));
         }
 
         @Override
@@ -126,34 +156,4 @@ public class EditDaySequenceActivity extends BaseActivity {
         }
     }
 
-    private class SequenceItemAdapter extends FirebaseRecyclerAdapter<DayExercise, DayExerciseSequenceViewHolder> {
-
-        public SequenceItemAdapter(@NonNull FirebaseRecyclerOptions<DayExercise> options) {
-            super(options);
-        }
-
-        @Override
-        public DayExerciseSequenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = getLayoutInflater().inflate(R.layout.edit_day_sequence_item, parent, false);
-
-            return new DayExerciseSequenceViewHolder(v);
-        }
-
-        @Override
-        protected void onBindViewHolder(@NonNull DayExerciseSequenceViewHolder holder, int position, @NonNull DayExercise model) {
-            holder.bind(model, mWorkoutDayReference, getRef(position));
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mAdapter.stopListening();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAdapter.startListening();
-    }
 }

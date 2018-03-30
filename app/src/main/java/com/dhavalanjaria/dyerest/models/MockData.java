@@ -110,8 +110,6 @@ public class MockData {
         for (ToDeleteExercise e: toDeleteExercises) {
             DayExercise sequenceItem = new DayExercise();
             sequenceItem.setSequenceNumber(i++);
-            sequenceItem.setExerciseType("LIFTING");
-            sequenceItem.setExerciseKey(e.getName());
 
             retVal.add(sequenceItem);
         }

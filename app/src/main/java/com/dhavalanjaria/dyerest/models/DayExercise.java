@@ -13,28 +13,26 @@ import java.util.Map;
  * similar to the tree that would exist in Firebase
  */
 public class DayExercise {
-    public String exerciseKey;
     public int sequenceNumber;
-    public String exerciseType;
+    public String name;
     public int totalPoints;
 
     public DayExercise() {
         // For DataSnapshot
     }
 
-    public DayExercise(String exerciseKey, int sequenceNumber, String exerciseType, int totalPoints) {
-        this.exerciseKey = exerciseKey;
+    public DayExercise(int sequenceNumber, String name, int totalPoints) {
         this.sequenceNumber = sequenceNumber;
-        this.exerciseType = exerciseType;
+        this.name = name;
         this.totalPoints = totalPoints;
     }
 
-    public String getExerciseKey() {
-        return exerciseKey;
+    public String getName() {
+        return name;
     }
 
-    public void setExerciseKey(String exerciseKey) {
-        this.exerciseKey = exerciseKey;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getSequenceNumber() {
@@ -43,14 +41,6 @@ public class DayExercise {
 
     public void setSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
-    }
-
-    public String getExerciseType() {
-        return exerciseType;
-    }
-
-    public void setExerciseType(String exerciseType) {
-        this.exerciseType = exerciseType;
     }
 
     public int getTotalPoints() {
@@ -65,6 +55,7 @@ public class DayExercise {
         Map<String, Object> map = new HashMap<>();
         map.put("sequenceNumber", getSequenceNumber());
         map.put("totalPoints", getTotalPoints());
+        map.put("name", getName());
 
         return map;
     }
