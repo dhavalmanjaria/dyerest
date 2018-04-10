@@ -90,8 +90,8 @@ public class EditExerciseActivity extends BaseActivity {
         mViewCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Intent should carry exercise ID
-                startActivity(new Intent(EditExerciseActivity.this, ExerciseCommentsActivity.class));
+                Intent intent = ExerciseCommentsActivity.newIntent(EditExerciseActivity.this, mExerciseRef.toString());
+                startActivity(intent);
             }
         });
 

@@ -28,6 +28,7 @@
         <activity android:name=".AddExerciseToDayActivity" />
         <activity android:name=".ListAllExerciseActivity" />
         <activity android:name=".AddNewExerciseActivity" />
+        <activity android:name=".ExerciseDetailActivity"></activity>
     </application>
 
 </manifest>
