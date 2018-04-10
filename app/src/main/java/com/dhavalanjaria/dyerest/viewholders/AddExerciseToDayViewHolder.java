@@ -91,8 +91,6 @@ public class AddExerciseToDayViewHolder extends RecyclerView.ViewHolder {
                             Log.e(TAG, databaseError.toString());
                         }
                     });
-
-
                 } else {
                     Query query = dayReference.child("exercises").equalTo(exerciseRef.getKey());
                     query.addListenerForSingleValueEvent(new ValueEventListener() {

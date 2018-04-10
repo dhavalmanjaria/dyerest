@@ -1,14 +1,10 @@
 package com.dhavalanjaria.dyerest;
 
-import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,13 +14,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
-import com.dhavalanjaria.dyerest.fragments.ExerciseCommentsActivity;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.ExerciseField;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseFieldViewHolder;
@@ -38,7 +31,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 

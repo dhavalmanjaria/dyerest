@@ -19,7 +19,7 @@ import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 /**
  * Created by Dhaval Anjaria on 2/23/2018.
  */
-
+@Deprecated
 public class NewCommentDialogFragment extends DialogFragment {
 
 

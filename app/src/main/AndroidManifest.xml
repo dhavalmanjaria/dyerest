@@ -23,7 +23,7 @@
         <activity android:name=".ExerciseHistoryActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".ExerciseGuideActivity" />
-        <activity android:name=".fragments.ExerciseCommentsActivity" />
+        <activity android:name=".ExerciseCommentsActivity" />
         <activity android:name=".ExercisePointsByDateActivity" />
         <activity android:name=".AddExerciseToDayActivity" />
         <activity android:name=".ListAllExerciseActivity" />
