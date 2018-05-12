@@ -58,6 +58,14 @@ public class EditExerciseActivity extends BaseActivity {
     private List<ExerciseField> mModel;
     private String mExerciseType;
 
+
+    public static Intent newIntent(Context context, String exerciseIdUrl) {
+        Intent intent = new Intent(context, EditExerciseActivity.class);
+        intent.putExtra(EXTRA_EXERCISE_ID_URL, exerciseIdUrl);
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +90,8 @@ public class EditExerciseActivity extends BaseActivity {
         mGuideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EditExerciseActivity.this, ExerciseGuideActivity.class));
+                startActivity(ExerciseGuideActivity.newIntent(EditExerciseActivity.this,
+                        mExerciseRef.toString()));
             }
         });
 
@@ -143,12 +152,6 @@ public class EditExerciseActivity extends BaseActivity {
         mExerciseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(exerciseUrl);
         setFieldsFromReference(mExerciseRef);
 
-    }
-
-    public static Intent newIntent(Context context, String exerciseIdUrl) {
-        Intent intent = new Intent(context, EditExerciseActivity.class);
-        intent.putExtra(EXTRA_EXERCISE_ID_URL, exerciseIdUrl);
-        return intent;
     }
 
     // This should perhaps go in its own package. However having adapters within Activites
