@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
+            android:id="@+id/view_link_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/view_link"
@@ -39,6 +40,7 @@
             android:drawableStart="@drawable/ic_view_link"/>
 
         <Button
+            android:id="@+id/add_link_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="8dp"

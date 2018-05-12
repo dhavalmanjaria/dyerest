@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.helpers.UriPathUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,12 +37,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static android.content.Intent.ACTION_VIEW;
+
 public class ExerciseGuideActivity extends BaseActivity {
 
     private static final String TAG = "ExerciseGuideActivity";
     private static final String EXTRA_EXERCISE_REF_URL = TAG + "ExerciseRefUrl";
     private Button mEditImageButton;
     private ImageView mImageView;
+    private Button mAddLinkButton;
+    private Button mViewLinkButton;
     private static final int REQUEST_PICK_IMAGE = 1000;
     private Uri mImageUri;
     public DatabaseReference mExerciseRef;
@@ -108,11 +113,49 @@ public class ExerciseGuideActivity extends BaseActivity {
 
                     // Since the intent flags do not work, I am doing this.
                     Uri fileUri = Uri.parse("file:///" + UriPathUtil.getPathFromUri(ExerciseGuideActivity.this, mImageUri));
-                    Intent intent = new Intent(Intent.ACTION_VIEW, fileUri);
+                    Intent intent = new Intent(ACTION_VIEW, fileUri);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setDataAndType(fileUri, "image/*");
                     startActivityForResult(intent, 999);
                 }
+            }
+        });
+
+        mAddLinkButton = findViewById(R.id.add_link_button);
+        mAddLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditDialogFragment.newInstance("Enter external URL/link", new OnDialogCompletedListener() {
+                    @Override
+                    public void onDialogComplete(String text) {
+                        mExerciseRef.child("link").setValue(text);
+                    }
+                })
+                .show(getSupportFragmentManager(), TAG);
+            }
+        });
+
+        mViewLinkButton = findViewById(R.id.view_link_button);
+        mViewLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mExerciseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String link = (String) dataSnapshot.child("link").getValue();
+
+                        Uri linkUri = Uri.parse(link);
+
+                        Intent intent = new Intent(ACTION_VIEW, linkUri);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, databaseError.getMessage());
+                        Log.e(TAG, databaseError.getDetails());
+                    }
+                });
             }
         });
     }
@@ -123,7 +166,6 @@ public class ExerciseGuideActivity extends BaseActivity {
 
         if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-
 
             InputStream inputStream = null;
             try {
