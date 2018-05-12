@@ -76,16 +76,6 @@ public class ExerciseGuideActivity extends BaseActivity {
                     Bitmap bitmap = BitmapFactory.decodeFile(path);
                     mImageView.setImageBitmap(bitmap);
 
-//                    if (ActivityCompat.checkSelfPermission(ExerciseGuideActivity.this,
-//                            Manifest.permission.MANAGE_DOCUMENTS) != PackageManager.PERMISSION_GRANTED) {
-//                        // Request missing manage documents permission
-//                        ActivityCompat.requestPermissions(ExerciseGuideActivity.this,
-//                                new String[] {Manifest.permission.MANAGE_DOCUMENTS},
-//                                REQUEST_PICK_IMAGE);
-//
-//                    } else {
-//                        mImageView.setImageURI(mImageUri);
-//                    }
                 }
             }
 
@@ -103,6 +93,8 @@ public class ExerciseGuideActivity extends BaseActivity {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
+                // This is what I believe allows the URI to be stored somewhere so that the same URI
+                // returns the same image.
                 intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
                 startActivityForResult(Intent.createChooser(intent, "Select image"), REQUEST_PICK_IMAGE);
@@ -113,41 +105,16 @@ public class ExerciseGuideActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (mImageUri != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
 
-                    Log.d(TAG, "Path from uri: " + mImageUri.getPath());
-
-                    intent.setDataAndType(mImageUri, "image/*");
-                    startActivity(intent);
+                    // Since the intent flags do not work, I am doing this.
+                    Uri fileUri = Uri.parse("file:///" + UriPathUtil.getPathFromUri(ExerciseGuideActivity.this, mImageUri));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, fileUri);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setDataAndType(fileUri, "image/*");
+                    startActivityForResult(intent, 999);
                 }
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PICK_IMAGE) {
-            if (grantResults.length == 1) {
-                if ( grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = getContentResolver().openInputStream(mImageUri);
-                    } catch (FileNotFoundException e) {
-                        Log.e(TAG, e.getStackTrace().toString());
-                        Toast.makeText(ExerciseGuideActivity.this, "Error loading file!",
-                                Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    mImageView.setImageBitmap(bitmap);
-                }
-                else  {
-                    Toast.makeText(ExerciseGuideActivity.this, "Permission to manage documents denied!",
-                            Toast.LENGTH_SHORT)
-                    .show();
-                }
-            }
-        }
     }
 
     @Override
