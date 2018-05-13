@@ -1,6 +1,7 @@
 package com.dhavalanjaria.dyerest;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.models.User;
@@ -32,6 +35,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private EditText mPasswordField;
     private Button mSignInButton;
     private Button mSignUpButton;
+    private ProgressBar mProgressBar;
+    private LinearLayout mProgressBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         mSignInButton.setOnClickListener(this);
         mSignUpButton.setOnClickListener(this);
+
+        mProgressBar = findViewById(R.id.progress_bar);
+        mProgressBarLayout = findViewById(R.id.progress_bar_layout);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -70,6 +79,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         String email = mEmailField.getText().toString();
         String password = mPasswordField.getText().toString();
 
+        mProgressBarLayout.invalidate();
+        mProgressBarLayout.requestLayout();
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.invalidate();
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -81,9 +96,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                             Toast.makeText(SignInActivity.this, "Sign In Failed", Toast.LENGTH_SHORT)
                                     .show();
+                            mProgressBar.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
+       //ddd mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     private void signUp() {
