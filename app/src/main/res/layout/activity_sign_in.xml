@@ -74,13 +74,30 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@id/progress_bar_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <Button
+            android:id="@+id/sign_in_google"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fui_sign_in_with_google"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/progress_bar_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" >
         <ProgressBar
-            android:id="@+id/progress_bar"
+            android:id="@+id/signin_progress_bar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
