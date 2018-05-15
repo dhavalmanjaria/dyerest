@@ -114,7 +114,7 @@ public class ExerciseGuideActivity extends BaseActivity {
                     // Since the intent flags do not work, I am doing this.
                     Uri fileUri = Uri.parse("file:///" + UriPathUtil.getPathFromUri(ExerciseGuideActivity.this, mImageUri));
                     Intent intent = new Intent(ACTION_VIEW, fileUri);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     intent.setDataAndType(fileUri, "image/*");
                     startActivityForResult(intent, 999);
                 }
@@ -174,9 +174,12 @@ public class ExerciseGuideActivity extends BaseActivity {
                 Log.e(TAG, e.getStackTrace().toString());
             }
 
+
+            // Here we create a copy of the image and upload the URI of that image. Whether or not
+            // that is the best way to do this is debatable.
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             String insertImageReturn = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap,
-            "exercise-guide.jpg", "JPG image");
+            "exercise-guide-"+mExerciseRef.getKey()+".jpg", "JPG image");
 
             mImageView.setImageURI(uri);
             mExerciseRef.child("uri").setValue(uri.toString());
