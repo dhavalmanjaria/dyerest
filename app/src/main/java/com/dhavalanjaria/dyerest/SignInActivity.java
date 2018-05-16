@@ -55,6 +55,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+
         mReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -158,13 +159,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
-
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
+                            Log.d(TAG, "SignIn failed", task.getException());
                             Toast.makeText(SignInActivity.this, "Sign In Failed", Toast.LENGTH_SHORT)
                                     .show();
                             mProgressBar.setVisibility(View.INVISIBLE);
+
                         }
                     }
                 });
@@ -191,6 +193,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                             Toast.makeText(SignInActivity.this, "Sign Up Failed", Toast.LENGTH_SHORT)
                                     .show();
+                            Log.d(TAG, task.getResult().toString());
                         }
                     }
                 });
@@ -204,6 +207,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         // Go to MainActivity
         startActivity(new Intent(SignInActivity.this, MainActivity.class));
+
+        // Set synced
+        FirebaseDatabase.getInstance().getReference().child(user.getUid()).keepSynced(true);
         finish();
     }
 

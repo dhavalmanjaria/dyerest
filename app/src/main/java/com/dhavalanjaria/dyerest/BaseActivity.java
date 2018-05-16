@@ -26,18 +26,12 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @return DatabaseReference -- The root of the app data tree.
      */
     public static DatabaseReference getRootDataReference() {
+
+
         // Not sure what the consequences of all of these functions being static are.
         return FirebaseDatabase.getInstance().getReference().child("dyerest").child(getUserId());
     }
 
-    /**
-     * This function returns a reference to just the users tree. This is separate from the app data
-     * tree.
-     * @return DatabaseReference -- Reference to the "users" tree.
-     */
-    protected static DatabaseReference getUsersReference() {
-        return FirebaseDatabase.getInstance().getReference().child("users");
-    }
 
     public abstract Query getQuery();
 
