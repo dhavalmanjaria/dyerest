@@ -1,4 +1,4 @@
-package com.dhavalanjaria.dyerest;
+package com.dhavalanjaria.dyerest.helpers;
 
 /**
  * Created by Dhaval Anjaria on 2/26/2018.

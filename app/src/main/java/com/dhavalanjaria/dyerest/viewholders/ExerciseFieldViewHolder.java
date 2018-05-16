@@ -10,7 +10,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.EditExerciseActivity;
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.ExerciseField;

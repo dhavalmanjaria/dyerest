@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,13 +19,10 @@ import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
 import com.dhavalanjaria.dyerest.AddExerciseToDayActivity;
 import com.dhavalanjaria.dyerest.BaseActivity;
 import com.dhavalanjaria.dyerest.EditDaySequenceActivity;
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
-import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.DayExercise;
-import com.dhavalanjaria.dyerest.models.ToDeleteExercise;
-import com.dhavalanjaria.dyerest.models.WorkoutDay;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -216,21 +212,12 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
             Map<String, Object> targetMap = getTargetMap(exerciseRef);
 
-            exerciseRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            exerciseRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String name = (String) dataSnapshot.getValue();
+                    String name = (String) dataSnapshot.child("name").getValue();
                     mExerciseName.setText(name);
                     // Other Exercise Views here.
-                    Map<String, Object> targetMap = getTargetMap(exerciseRef);
-
-                    if (targetMap != null) {
-                        setTargetPointsFromMap(targetMap , mExercisePoints);
-                        setTargetValuesFromMap(targetMap , mExerciseTarget);
-                        setLastPerformedFromMap(targetMap , mPreviousDate);
-                    } else {
-
-                    }
                 }
 
                 @Override
@@ -238,6 +225,29 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
                 }
             });
+            final DatabaseReference exerciseTargetRef = BaseActivity.getRootDataReference().child("targets")
+                    .child(exerciseKey);
+
+
+            exerciseTargetRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, Object> targetMap = getTargetMap(exerciseRef);
+
+                    if (targetMap != null) {
+                        setTargetPointsFromMap(targetMap , mExercisePoints);
+                        setTargetValuesFromMap(targetMap , mExerciseTarget);
+                        setLastPerformedFromMap(targetMap , mPreviousDate);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(TAG, databaseError.getMessage());
+                    Log.e(TAG, databaseError.getDetails());
+                }
+            });
+
         }
     }
 
@@ -249,19 +259,19 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
      */
     public Map<String, Object> getTargetMap(DatabaseReference exerciseRef) {
 
-            DatabaseReference ref = BaseActivity.getRootDataReference()
+            DatabaseReference exerciseTargetRef = BaseActivity.getRootDataReference()
                     .child("targets")
                     .child(exerciseRef.getKey());
 
-            if (ref.getKey() == null) {
+            if (exerciseTargetRef.getKey() == null) {
                 mTargetMap = null;
                 return null;
             }
 
             final Map<String, Object> retval = new HashMap<>();
 
-            ref.orderByKey().limitToLast(1)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+            exerciseTargetRef.orderByKey().limitToLast(1)
+                    .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() == null) {

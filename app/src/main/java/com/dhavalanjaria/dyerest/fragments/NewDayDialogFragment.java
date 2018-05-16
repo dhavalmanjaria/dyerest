@@ -4,14 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.EditText;
 
-import com.dhavalanjaria.dyerest.ExerciseListActivity;
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 

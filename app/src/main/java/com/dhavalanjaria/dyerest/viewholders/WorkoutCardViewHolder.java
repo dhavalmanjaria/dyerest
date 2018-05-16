@@ -8,14 +8,13 @@ import android.widget.TextView;
 
 import com.dhavalanjaria.dyerest.BaseActivity;
 import com.dhavalanjaria.dyerest.MainActivity;
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.WorkoutDetailActivity;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
 import com.dhavalanjaria.dyerest.models.Workout;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by Dhaval Anjaria on 2/6/2018.

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.EditText;
 
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 
 import static android.text.style.TtsSpan.ARG_TEXT;
 
