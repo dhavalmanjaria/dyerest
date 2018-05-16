@@ -71,6 +71,8 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
         }
 
         mWorkoutDaysReference = getRootDataReference()
+                .child("workouts")
+                .child(mWorkoutId)
                 .child("days");
 
         mRecyclerContainer = findViewById(R.id.workout_detail_container);
@@ -80,10 +82,10 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot childSnap: dataSnapshot.getChildren()) {
-                    if (!mDayRefList.contains(childSnap.getRef())) {
-                        Log.d(TAG, "Adding to model: " + childSnap.getValue().toString());
-                        mDayRefList.add(childSnap.getRef());
-                        mAdapter.notifyDataSetChanged();
+                    DatabaseReference dayRef = getRootDataReference().child("days")
+                            .child(childSnap.getKey());
+                    if (!mDayRefList.contains(dayRef)) {
+                        mDayRefList.add(dayRef);
                     }
                 }
             }
