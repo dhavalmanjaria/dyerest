@@ -18,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.models.ExerciseField;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseFieldViewHolder;

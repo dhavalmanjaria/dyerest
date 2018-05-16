@@ -10,11 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dhavalanjaria.dyerest.BaseActivity;
-import com.dhavalanjaria.dyerest.OnDialogCompletedListener;
-import com.dhavalanjaria.dyerest.R;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
-import com.dhavalanjaria.dyerest.models.Exercise;
 import com.dhavalanjaria.dyerest.viewholders.ExerciseCommentsViewHolder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

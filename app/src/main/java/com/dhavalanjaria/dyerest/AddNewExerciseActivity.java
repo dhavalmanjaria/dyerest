@@ -4,18 +4,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
-import com.dhavalanjaria.dyerest.models.Exercise;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 public class AddNewExerciseActivity extends BaseActivity {
 

@@ -174,7 +174,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         @Override
         protected void onBindViewHolder(@NonNull DayExercisePreviewViewHolder holder, int position,
                                         @NonNull DayExercise model) {
-            holder.bind(model, getRef(position));
+            holder.bindDayExercise(model, getRef(position));
 
         }
 
@@ -204,13 +204,11 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
         }
 
-        public void bind(DayExercise exercise, DatabaseReference ref) {
+        public void bindDayExercise(DayExercise exercise, DatabaseReference ref) {
             String exerciseKey = ref.getKey();
 
             final DatabaseReference exerciseRef = BaseActivity.getRootDataReference().child("exercises")
                     .child(exerciseKey);
-
-            Map<String, Object> targetMap = getTargetMap(exerciseRef);
 
             exerciseRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -228,63 +226,23 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
             final DatabaseReference exerciseTargetRef = BaseActivity.getRootDataReference().child("targets")
                     .child(exerciseKey);
 
-
-            exerciseTargetRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Map<String, Object> targetMap = getTargetMap(exerciseRef);
-
-                    if (targetMap != null) {
-                        setTargetPointsFromMap(targetMap , mExercisePoints);
-                        setTargetValuesFromMap(targetMap , mExerciseTarget);
-                        setLastPerformedFromMap(targetMap , mPreviousDate);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(TAG, databaseError.getMessage());
-                    Log.e(TAG, databaseError.getDetails());
-                }
-            });
-
-        }
-    }
-
-    /**
-     * Stores the exercise target node into a Map<> so that queries don't need to go out to Firebase
-     * @param exerciseRef Reference to the exercise used to find the target.
-     * @return Map<String, Object> Structure containing the exercise target node with one
-     * modification: the Map<> also has a node "date" containing the date.
-     */
-    public Map<String, Object> getTargetMap(DatabaseReference exerciseRef) {
-
-            DatabaseReference exerciseTargetRef = BaseActivity.getRootDataReference()
-                    .child("targets")
-                    .child(exerciseRef.getKey());
-
-            if (exerciseTargetRef.getKey() == null) {
-                mTargetMap = null;
-                return null;
-            }
-
-            final Map<String, Object> retval = new HashMap<>();
+            final Map<String, Object> targetMap = new HashMap<>();
 
             exerciseTargetRef.orderByKey().limitToLast(1)
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.getValue() == null) {
-                                mTargetMap = null;
-                            } else {
+                            if (dataSnapshot.exists()) {
                                 dataSnapshot = dataSnapshot.getChildren().iterator().next();
 
-                                retval.put("date", dataSnapshot.getRef().getKey());
-                                retval.putAll((Map<String, Object>) dataSnapshot.getValue());
+                                targetMap.put("date", dataSnapshot.getRef().getKey());
 
-                                mTargetMap = retval;
+                                targetMap.putAll((Map<String, Object>) dataSnapshot.getValue());
+
+                                setLastPerformedFromMap(targetMap, mPreviousDate);
+                                setTargetPointsFromMap(targetMap, mExercisePoints);
+                                setTargetValuesFromMap(targetMap, mExerciseTarget);
                             }
-
                         }
 
                         @Override
@@ -292,12 +250,14 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
 
                         }
                     });
-            return mTargetMap;
+
+        }
     }
 
     public void setTargetPointsFromMap(Map<String, Object> targetMap, final TextView v) {
         String pointsStr = (long) targetMap.get("points") + "";
         v.setText(pointsStr);
+        v.invalidate();
     }
 
     public void setTargetValuesFromMap(Map<String, Object> targetMap, final TextView v) {
@@ -317,6 +277,7 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
             targetString += s;
         }
         v.setText(targetString);
+        v.invalidate();
     }
 
     public void setLastPerformedFromMap(Map<String, Object> targetMap, final TextView v) {
@@ -329,5 +290,6 @@ public class WorkoutDayViewHolder extends RecyclerView.ViewHolder {
         String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
 
         v.setText(formattedDate);
+        v.invalidate();
     }
 }

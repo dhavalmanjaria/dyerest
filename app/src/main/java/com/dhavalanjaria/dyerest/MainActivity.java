@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhavalanjaria.dyerest.fragments.EditDialogFragment;
+import com.dhavalanjaria.dyerest.helpers.OnDialogCompletedListener;
 import com.dhavalanjaria.dyerest.models.Workout;
 import com.dhavalanjaria.dyerest.viewholders.WorkoutCardViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
