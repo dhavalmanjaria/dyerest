@@ -1,5 +1,6 @@
 package com.dhavalanjaria.dyerest.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -150,6 +151,7 @@ public class ActiveExerciseFragment extends Fragment {
 
                 Toast.makeText(getActivity(), "Exercise saved", Toast.LENGTH_SHORT)
                         .show();
+                ((ActiveWorkoutActivity)getActivity()).setNext();
             }
         });
 

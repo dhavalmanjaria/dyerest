@@ -104,8 +104,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
                     }
                 });
 
-
-
         mDayReference.child("exercises").addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -296,6 +294,11 @@ public class ActiveWorkoutActivity extends BaseActivity {
         public int getCount() {
             return mModel.size() ;
         }
+    }
+
+    public void setNext() {
+        mActiveExerciseViewPager.setCurrentItem(mActiveExerciseViewPager.getCurrentItem() + 1,
+                true);
     }
 
     /**
