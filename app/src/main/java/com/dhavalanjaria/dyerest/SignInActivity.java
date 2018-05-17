@@ -15,11 +15,14 @@ import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.models.User;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.util.GoogleApiUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -89,6 +92,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mProgressBar = findViewById(R.id.signin_progress_bar);
         mProgressBarLayout = findViewById(R.id.progress_bar_layout);
         mProgressBar.setVisibility(View.INVISIBLE);
+
+        // If google play services are not available, sign in will not work so this makes sure it
+        // is.
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
     }
 
     @Override
@@ -162,7 +169,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
-                            Log.d(TAG, "SignIn failed", task.getException());
+                            Log.w(TAG, "Sign In: ", task.getException());
                             Toast.makeText(SignInActivity.this, "Sign In Failed", Toast.LENGTH_SHORT)
                                     .show();
                             mProgressBar.setVisibility(View.INVISIBLE);
@@ -193,7 +200,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                             Toast.makeText(SignInActivity.this, "Sign Up Failed", Toast.LENGTH_SHORT)
                                     .show();
-                            Log.d(TAG, task.getResult().toString());
+                            Log.w(TAG, "Sign Up: ", task.getException());
                         }
                     }
                 });

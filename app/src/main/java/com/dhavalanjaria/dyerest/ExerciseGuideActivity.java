@@ -169,7 +169,7 @@ public class ExerciseGuideActivity extends BaseActivity {
             String insertImageReturn = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap,
             "exercise-guide-"+mExerciseRef.getKey()+".jpg", "JPG image");
 
-            mImageView.setImageURI(uri);
+            mImageView.setImageURI(Uri.parse(insertImageReturn));
             mExerciseRef.child("uri").setValue(uri.toString());
         }
     }
