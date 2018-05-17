@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dhavalanjaria.dyerest.ActiveWorkoutActivity;
+import com.dhavalanjaria.dyerest.BaseActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
 import com.dhavalanjaria.dyerest.models.Exercise;
@@ -111,8 +112,6 @@ public class ActiveExerciseFragment extends Fragment {
                 mExerciseNameText.setText(mExercise.getName());
                 // Other Views also go here.
 
-                adapterModel.addAll(generateFieldValues(mExercise, setNo, mDayPerformedReference));
-                adapter.notifyDataSetChanged();
                 createExerciseFields(mExercisePerformedReference, mExercise);
 
             }
@@ -123,6 +122,40 @@ public class ActiveExerciseFragment extends Fragment {
                 Log.d(TAG, databaseError.getDetails());
             }
         });
+
+        final DatabaseReference exerciseTargetRef = BaseActivity.getRootDataReference().child("targets")
+                .child(mExerciseRef.getKey());
+
+        final Map<String, Object> targetMap = new HashMap<>();
+
+        exerciseTargetRef.orderByKey().limitToLast(1)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            dataSnapshot = dataSnapshot.getChildren().iterator().next();
+
+                            targetMap.putAll((HashMap<String,Object>)dataSnapshot.child("values")
+                                    .getValue());
+                            for (String key: targetMap.keySet()) {
+                                int val = 0;
+                                try {
+                                    adapterModel.add(
+                                            new ActiveExerciseField(key, Integer.valueOf(
+                                                    "" + targetMap.get(key))));
+                                } catch (ClassCastException ex) {
+                                    Log.e(TAG, "Exception while adding fields map", ex);
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
         mSaveButton = (FloatingActionButton) v.findViewById(R.id.save_exercise_data_button);
         mSaveButton.setOnClickListener(new View.OnClickListener() {

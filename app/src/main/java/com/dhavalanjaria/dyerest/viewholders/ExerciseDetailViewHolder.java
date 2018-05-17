@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhavalanjaria.dyerest.BaseActivity;
 import com.dhavalanjaria.dyerest.R;
 import com.dhavalanjaria.dyerest.fragments.ActiveExerciseFragment;
 import com.dhavalanjaria.dyerest.models.ActiveExerciseField;
@@ -21,7 +22,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dhaval Anjaria on 2/15/2018.
@@ -57,11 +60,11 @@ public class ExerciseDetailViewHolder extends RecyclerView.ViewHolder {
         mExerciseFieldText.setText(activeExerciseField.getFieldName());
         mExerciseValueEdit.setHint("" + activeExerciseField.getValue());
 
+        // This is should not be a hardcoded string. However, this greatly simplifies things.
         if (activeExerciseField.getFieldName().equalsIgnoreCase("set")) {
             mExerciseValueEdit.setFocusable(false);
             mExerciseValueEdit.setEnabled(false);
         }
-
         mExerciseValueEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
