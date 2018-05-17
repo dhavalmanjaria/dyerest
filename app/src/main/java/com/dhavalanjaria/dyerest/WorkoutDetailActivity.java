@@ -86,6 +86,7 @@ public class WorkoutDetailActivity extends BaseActivity implements OnDialogCompl
                             .child(childSnap.getKey());
                     if (!mDayRefList.contains(dayRef)) {
                         mDayRefList.add(dayRef);
+                        mAdapter.notifyDataSetChanged();
                     }
                 }
             }
