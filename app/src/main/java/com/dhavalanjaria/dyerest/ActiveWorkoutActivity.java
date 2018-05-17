@@ -88,7 +88,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
         // This helps us find the last exercise in the sequence. So that we can tell when all
         // the exercises have been fetched.
         final String[] lastExerciseKey = {null};
-
         mDayReference.child("exercises").orderByChild("sequenceNumber").limitToLast(1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -104,8 +103,8 @@ public class ActiveWorkoutActivity extends BaseActivity {
                     }
                 });
 
-        mDayReference.child("exercises").addListenerForSingleValueEvent(new ValueEventListener() {
-
+        mDayReference.child("exercises").orderByChild("sequenceNumber")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int dayExerciseCount = 0;
@@ -188,8 +187,6 @@ public class ActiveWorkoutActivity extends BaseActivity {
                 mStatePagerAdapter = adapterTempVar;
 
             }
-
-
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
